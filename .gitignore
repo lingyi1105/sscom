@@ -1,0 +1,14 @@
+_build/*
+*.o
+*.d
+*.plg
+*.lst
+*.axf
+*.htm
+*.lnp
+*.map
+*.crf
+*.bak
+*.dep
+ble_app_uart_s132_pca10040.uvopt
+JLinkLog.txt
