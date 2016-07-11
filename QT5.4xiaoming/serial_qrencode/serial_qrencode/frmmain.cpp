@@ -30,17 +30,17 @@ void frmMain::InitStyle()
     this->setProperty("CanMove", true);
     this->setWindowTitle(ui->lab_Title->text());
     //设置窗体标题栏隐藏
-    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
+    //this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
     //安装事件监听器,让标题栏识别鼠标双击
-    ui->lab_Title->installEventFilter(this);
+    //ui->lab_Title->installEventFilter(this);
 
-    IconHelper::Instance()->SetIcon(ui->btnMenu_Close, QChar(0xf00d));
-    IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf096));
-    IconHelper::Instance()->SetIcon(ui->btnMenu_Min, QChar(0xf068));
-    IconHelper::Instance()->SetIcon(ui->lab_Ico, QChar(0xf015));
+//    IconHelper::Instance()->SetIcon(ui->btnMenu_Close, QChar(0xf00d));
+//    IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf096));
+//    IconHelper::Instance()->SetIcon(ui->btnMenu_Min, QChar(0xf068));
+//    IconHelper::Instance()->SetIcon(ui->lab_Ico, QChar(0xf015));
 
-    connect(ui->btnMenu_Close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui->btnMenu_Min, SIGNAL(clicked()), this, SLOT(showMinimized()));
+//    connect(ui->btnMenu_Close, SIGNAL(clicked()), this, SLOT(close()));
+//    connect(ui->btnMenu_Min, SIGNAL(clicked()), this, SLOT(showMinimized()));
 }
 
 bool frmMain::eventFilter(QObject *obj, QEvent *event)
@@ -54,28 +54,28 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
 
 void frmMain::InitForm()
 {
-   QString qssFile = ":/qss/dev.css";
+   //QString qssFile = ":/qss/dev.css";
    // myHelper::Sleep(300);
-   myHelper::SetStyle(qssFile);
+   //myHelper::SetStyle(qssFile);
    this->rencode_text = "hello world!";
    QRcode_Encode(this->rencode_text);
 }
 
 void frmMain::on_btnMenu_Max_clicked()
 {
-    if (max) {
-        this->setGeometry(location);
-        IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf096));
-        ui->btnMenu_Max->setToolTip("最大化");
-        this->setProperty("CanMove", true);
-    } else {
-        location = this->geometry();
-        this->setGeometry(qApp->desktop()->availableGeometry());
-        IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf079));
-        ui->btnMenu_Max->setToolTip("还原");
-        this->setProperty("CanMove", false);
-    }
-    max = !max;
+//    if (max) {
+//        this->setGeometry(location);
+//        IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf096));
+//        ui->btnMenu_Max->setToolTip("最大化");
+//        this->setProperty("CanMove", true);
+//    } else {
+//        location = this->geometry();
+//        this->setGeometry(qApp->desktop()->availableGeometry());
+//        IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf079));
+//        ui->btnMenu_Max->setToolTip("还原");
+//        this->setProperty("CanMove", false);
+//    }
+//    max = !max;
 }
 
 void frmMain::QRcode_Encode(QByteArray &text)
@@ -108,8 +108,8 @@ void frmMain::QRcode_Encode(QByteArray &text)
         painter.end();
         point = NULL;
         QRcode_free(qrcode);
-        // draw icon
-        // if (icon.isNull ()) {
+//         draw icon
+//         if (icon.isNull ()) {
 //            painter.setBrush(this->background);
 //            double icon_width = (this->width () - 2.0 * margin) * percent;
 //            double icon_height = icon_width;

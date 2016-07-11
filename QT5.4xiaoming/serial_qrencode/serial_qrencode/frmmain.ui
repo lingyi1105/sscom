@@ -352,7 +352,7 @@
                 <rect>
                  <x>10</x>
                  <y>160</y>
-                 <width>182</width>
+                 <width>181</width>
                  <height>51</height>
                 </rect>
                </property>
@@ -364,7 +364,7 @@
                  <widget class="QPushButton" name="open_port_Button">
                   <property name="minimumSize">
                    <size>
-                    <width>80</width>
+                    <width>50</width>
                     <height>32</height>
                    </size>
                   </property>
@@ -375,11 +375,17 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="check_port_Button">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
                   <property name="minimumSize">
                    <size>
                     <width>80</width>
                     <height>32</height>
                    </size>
+                  </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
                   </property>
                   <property name="text">
                    <string>检测</string>
@@ -392,6 +398,9 @@
             </item>
             <item>
              <widget class="QGroupBox" name="groupBox_4">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -464,6 +473,19 @@
               </property>
               <property name="maxLength">
                <number>65535</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>打印</string>
               </property>
              </widget>
             </item>
