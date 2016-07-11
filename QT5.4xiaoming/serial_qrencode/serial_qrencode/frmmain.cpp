@@ -1,7 +1,10 @@
 #include "frmmain.h"
 #include "ui_frmmain.h"
 #include "api/myhelper.h"
-#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QPrintPreviewDialog>
+#include <QPageSetupDialog>
 #include <QByteArray>
 #include "qrencode/qrencode.h"
 #include <QSerialPortInfo>
@@ -28,7 +31,7 @@ void frmMain::InitStyle()
     this->location = this->geometry();
     this->setProperty("Form", true);
     this->setProperty("CanMove", true);
-    this->setWindowTitle(ui->lab_Title->text());
+    this->setWindowTitle("缇铭科技量产工具V1.0");
     //设置窗体标题栏隐藏
     //this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
     //安装事件监听器,让标题栏识别鼠标双击
@@ -305,4 +308,93 @@ void frmMain::on_cboxStyle_currentIndexChanged(const QString &arg1)
 //    myHelper::SetStyle(qssFile);
 }
 
+void frmMain::plotPic(QPrinter *printer)
+{
+    log_output("开始打印...");
+}
 
+void frmMain::on_print_button_clicked()
+{
+    QPrinter printer;
+    ui->print_button->setText(tr("正在打印"));
+    QPrintPreviewDialog preview(&printer,0); /* 打印预览 */
+   /**
+    * QPrintPreviewDialog类提供了一个打印预览对话框，里面功能比较全，
+    * paintRequested(QPrinter *printer)是系统提供的，
+    * 当preview.exec()执行时该信号被触发，
+    * plotPic(QPrinter *printer)是用户自定义的槽函数，图像的绘制就在这个函数里。
+    */
+   connect(&preview, SIGNAL(paintRequested(QPrinter *)),this,SLOT(plotPic(QPrinter *)));
+
+   preview.exec(); /* 等待预览界面退出 */
+
+//    QPrinter printer;
+//    QString printerName = printer.printerName();
+//    if(printerName.size()==0) return;
+//    QPageSetupDialog pageSetUpdlg(&printer, this);
+    //页面设置
+//    if(pageSetUpdlg.exec()==QDialog::Accepted)
+//    {
+//        printer.setOrientation(QPrinter::Landscape);
+//    }
+//    else
+//    {
+//        printer.setOrientation(QPrinter::Portrait);
+//    }
+//    QPrintDialog dlg(&printer,this);
+    ui->plainTextEdit->print(&printer);
+
+    //打印预览
+//    QPrinter printer(QPrinter::HighResolution);
+//    QPrintPreviewDialog preview(&printer,this);
+//    connect(&preview, SIGNAL(paintRequested(QPrinter *)),this,SLOT(plotPic(QPrinter *)));
+//    QMessageBox msgBox;
+//    msgBox.setText(tr("请选择打印方式"));
+//    msgBox.addButton(tr("输出到文档"),QMessageBox::AcceptRole);
+//    msgBox.addButton(tr("输出到打印机"),QMessageBox::RejectRole);
+//    if(msgBox.exec()==QMessageBox::AcceptRole)
+//      printer.setOutputFormat(QPrinter::PdfFormat);
+//    preview.exec();
+
+//    QPrintDialog printDialog(&printer, this);
+//    if (printDialog.exec() == QDialog::Accepted)
+//    {
+//        QWidget *myForm=new QWidget(this);
+//        myForm->setObjectName(QString::fromUtf8("Form"));
+//        myForm->resize(40, 30);
+//        QTableWidget *tableWidget;
+//        tableWidget = new QTableWidget(myForm);
+//        tableWidget->setColumnCount(3);
+//        tableWidget->setRowCount(4);
+//        tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
+//        tableWidget->setGeometry(QRect(0, 0,40, 30));
+//        QPainter painter(&printer);
+//        //painter.drawPixmap(0, 0, QPixmap::grabWidget(0,0,400,300));
+//        QPixmap image;
+//        image=image.grabWidget(myForm,0,0,40,30);
+//        QRect rect = painter.viewport();
+//        QSize size = image.size();
+//        size.scale(rect.size(), Qt::KeepAspectRatio);     //此处保证图片显示完整
+//        painter.setViewport(rect.x(), rect.y(),size.width(), size.height());
+//        painter.setWindow(image.rect());
+//        painter.drawPixmap(0,0,image);
+//    }
+}
+void frmMain::on_prit_button_clicked()
+{
+    QPrinter printer(QPrinter::HighResolution);
+    QPrintDialog printDialog(&printer, this);
+         if (printDialog.exec() == QDialog::Accepted) {
+             QWidget *myForm=new QWidget(this);
+             myForm->setObjectName(QString::fromUtf8("Form"));
+             myForm->resize(400, 300);
+             QTableWidget *tableWidget;
+             tableWidget = new QTableWidget(myForm);
+             tableWidget->setColumnCount(3);
+             tableWidget->setRowCount(4);
+             tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
+             tableWidget->setGeometry(QRect(0, 0,400, 300));
+            QPainter painter(&printer);
+            painter.drawPixmap(0, 0, QPixmap::grabWidget(0,0,400,300));
+         }
+}

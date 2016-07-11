@@ -2,7 +2,9 @@
 #define FRMMAIN_H
 
 #include <QDialog>
+#include <QPainter>
 #include <QSerialPort>
+#include <QPrinter>
 
 namespace Ui
 {
@@ -27,6 +29,10 @@ private slots:
     void on_cboxStyle_currentIndexChanged(const QString &arg1);
 
     void on_open_port_Button_clicked();
+    void on_prit_button_clicked();
+
+    void on_print_button_clicked();
+    void plotPic(QPrinter *printer);
 
 private:
     Ui::frmMain *ui;
