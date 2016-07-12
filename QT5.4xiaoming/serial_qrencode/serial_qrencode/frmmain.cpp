@@ -8,7 +8,8 @@
 #include <QByteArray>
 #include "qrencode/qrencode.h"
 #include <QSerialPortInfo>
-
+#include "Barcode.h"
+#include <QtDebug>
 
 
 frmMain::frmMain(QWidget *parent) :
@@ -18,6 +19,10 @@ frmMain::frmMain(QWidget *parent) :
     ui->setupUi(this);
     this->InitStyle();
     this->InitForm();
+    barcode = new BarCode(this);
+    barcode->setVisible(false);
+    typedef QPair<BarCode::BarcodeTypes, QString> BarcodeType;
+    BarCode::BarcodeTypePairList typeList = BarCode::getTypeList();
     port_param_init();
     myHelper::FormInCenter(this);
 }
@@ -59,13 +64,24 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
 
 void frmMain::InitForm()
 {
-   //QString qssFile = ":/qss/dev.css";
-   // myHelper::Sleep(300);
-   //myHelper::SetStyle(qssFile);
-   this->rencode_text = "hello world!";
+   this->rencode_text = "8A8F298391E1";
    QRcode_Encode(this->rencode_text);
 }
-
+//显示条形码
+void frmMain::QBarcode_ts102(QByteArray &text)
+{
+    ui->rencode_lineEdit->setText(text);
+    if (this->rencode_text.trimmed().isEmpty())
+        return;
+    QImage barcodeImage(ui->rencode_view->size(), QImage::Format_ARGB32);
+    barcodeImage.fill(QColor(255, 255, 255, 0));
+    QPainter painter(&barcodeImage);
+    barcode->setBarcodeType((BarCode::BarcodeTypes)60);
+    barcode->setValue(this->rencode_text);
+    barcode->drawBarcode(&painter, 0, 0, barcodeImage.width(), barcodeImage.height());
+    painter.end();
+    ui->rencode_view->setPixmap(QPixmap::fromImage(barcodeImage));
+}
 void frmMain::on_btnMenu_Max_clicked()
 {
 //    if (max) {
@@ -111,6 +127,7 @@ void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
         QRcode_free(qrcode);
     }
 }
+//二维码显示
 void frmMain::QRcode_Encode(QByteArray &text)
 {
     int margin = 10;
@@ -155,7 +172,7 @@ void frmMain::port_param_init()
     ui->buadrate_comboBox->addItem(QLatin1String("19200"));
     ui->buadrate_comboBox->addItem(QLatin1String("38400"));
     ui->buadrate_comboBox->addItem(QLatin1String("115200"));
-    ui->buadrate_comboBox->setCurrentIndex(5);
+    ui->buadrate_comboBox->setCurrentIndex(8);
 
     // fill data bits
     ui->databits_comboBox->addItem(QLatin1String("5"), QSerialPort::Data5);
@@ -220,7 +237,8 @@ void frmMain::FrameParse(char c)
             this->rencode_text = this->recv_arr;
             if(rencode_text.isEmpty()==false)
             {
-            QRcode_Encode(this->rencode_text);
+            //QRcode_Encode(this->rencode_text);
+            QBarcode_ts102(this->rencode_text);
             log_output(tr("解析成功"));
             }
             state = 0;
@@ -246,10 +264,6 @@ void frmMain::serialport_recv()
             FrameParse(temp.at(i));
         }
     }
-   // this->rx_array.insert(this->rx_array.size(),temp);
-   // this->rx_count += temp.size();
-    //ui->rx_count_label->setText(tr("%1").arg(this->rx_count));
-
 }
 
 void frmMain::open_serialport()
@@ -312,14 +326,25 @@ void frmMain::plotPic(QPrinter *printer)
 
 void frmMain::on_print_button_clicked()
 {
+    //二维码打印
+//    QPrinter printer;
+//    QString printerName = printer.printerName();
+//    if(printerName.size()==0) return;
+//    QPrintDialog *dialog = new QPrintDialog(&printer);
+//    dialog->setWindowTitle("print Document");
+//    QPrintDialog dlg(&printer,this);
+//    QPainter painter;
+//    QPcode(&printer,&painter,this->rencode_text);
+    //条形码显示
     QPrinter printer;
-    QString printerName = printer.printerName();
-    if(printerName.size()==0) return;
-    QPrintDialog *dialog = new QPrintDialog(&printer);
-    dialog->setWindowTitle("print Document");
-    QPrintDialog dlg(&printer,this);
-    QPainter painter;
-    QPcode(&printer,&painter,this->rencode_text);
+    log_output("开始打印...");
+    if (this->rencode_text.trimmed().isEmpty())
+        return;
+    QPainter painter(&printer);
+    barcode->setBarcodeType((BarCode::BarcodeTypes)60);
+    barcode->setValue(this->rencode_text);
+    barcode->drawBarcode(&painter, 0, 0, 70,70);
+    painter.end();
 }
 void frmMain::on_prit_button_clicked()
 {

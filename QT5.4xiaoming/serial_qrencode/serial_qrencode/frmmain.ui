@@ -238,7 +238,7 @@
                <property name="spacing">
                 <number>2</number>
                </property>
-               <item row="0" column="2">
+               <item row="1" column="2">
                 <widget class="QPlainTextEdit" name="plainTextEdit">
                  <property name="enabled">
                   <bool>true</bool>
@@ -259,6 +259,9 @@
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
              <widget class="QLabel" name="rencode_view">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -279,7 +282,7 @@
             <item>
              <widget class="QLineEdit" name="rencode_lineEdit">
               <property name="enabled">
-               <bool>true</bool>
+               <bool>false</bool>
               </property>
              </widget>
             </item>
