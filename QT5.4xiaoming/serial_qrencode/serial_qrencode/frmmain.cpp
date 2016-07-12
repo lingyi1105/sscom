@@ -9,6 +9,8 @@
 #include "qrencode/qrencode.h"
 #include <QSerialPortInfo>
 
+
+
 frmMain::frmMain(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::frmMain)
@@ -80,14 +82,42 @@ void frmMain::on_btnMenu_Max_clicked()
 //    }
 //    max = !max;
 }
-
+void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
+{
+    int margin = 10;
+    ui->rencode_lineEdit->setText(text);
+    this->foreground = QColor("black");
+    this->background = QColor("white");
+    QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
+    if(NULL != qrcode) {
+        painter->begin(printer);
+        unsigned char *point = qrcode->data;
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(this->background);
+        painter->drawRect(0, 0, 80, 80);
+        double scale = (80 - 2.0 * margin) / qrcode->width;
+        painter->setBrush(this->foreground);
+        for (int y = 0; y < qrcode->width; y ++) {
+            for (int x = 0; x < qrcode->width; x ++) {
+                if (*point & 1) {
+                    QRectF r(margin + x * scale, margin + y * scale, scale, scale);
+                    painter->drawRects(&r, 1);
+                }
+                point ++;
+            }
+        }
+        painter->end();
+        point = NULL;
+        QRcode_free(qrcode);
+    }
+}
 void frmMain::QRcode_Encode(QByteArray &text)
 {
     int margin = 10;
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
-    QRcode *qrcode = QRcode_encodeString(text.data(), 7, QR_ECLEVEL_Q, QR_MODE_8, 1);
+    QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
         QPixmap pixmap(400,400);//ui->rencode_view->width(), ui->rencode_view->height());
         QPainter painter;
@@ -111,19 +141,6 @@ void frmMain::QRcode_Encode(QByteArray &text)
         painter.end();
         point = NULL;
         QRcode_free(qrcode);
-//         draw icon
-//         if (icon.isNull ()) {
-//            painter.setBrush(this->background);
-//            double icon_width = (this->width () - 2.0 * margin) * percent;
-//            double icon_height = icon_width;
-//            double wrap_x = (this->width () - icon_width) / 2.0;
-//            double wrap_y = (this->width () - icon_height) / 2.0;
-//            QRectF wrap(wrap_x - 5, wrap_y - 5, icon_width + 10, icon_height + 10);
-//            painter.drawRoundRect(wrap, 50, 50);
-//            QPixmap image(":/logo.png");
-//            QRectF target(wrap_x, wrap_y, icon_width, icon_height);
-//            QRectF source(0, 0, image.width (), image.height ());
-//            painter.drawPixmap (target, image, source);
     }
 }
 void frmMain::port_param_init()
@@ -285,27 +302,7 @@ void frmMain::log_output(QString info)
 }
 void frmMain::on_cboxStyle_currentIndexChanged(const QString &arg1)
 {
-//    QString qssName = ui->cboxStyle->currentText();
-//    QString qssFile = ":/qss/lightgray.css";
-//    if (qssName == "黑色") {
-//        qssFile = ":/qss/black.css";
-//    } else if (qssName == "灰黑色") {
-//        qssFile = ":/qss/brown.css";
-//    } else if (qssName == "灰色") {
-//        qssFile = ":/qss/gray.css";
-//    } else if (qssName == "浅灰色") {
-//        qssFile = ":/qss/lightgray.css";
-//    } else if (qssName == "深灰色") {
-//        qssFile = ":/qss/darkgray.css";
-//    } else if (qssName == "银色") {
-//        qssFile = ":/qss/silvery.css";
-//    } else if (qssName == "淡蓝色") {
-//        qssFile = ":/qss/blue.css";
-//    } else if (qssName == "蓝色") {
-//        qssFile = ":/qss/dev.css";
-//    }
 
-//    myHelper::SetStyle(qssFile);
 }
 
 void frmMain::plotPic(QPrinter *printer)
@@ -316,85 +313,15 @@ void frmMain::plotPic(QPrinter *printer)
 void frmMain::on_print_button_clicked()
 {
     QPrinter printer;
-    ui->print_button->setText(tr("正在打印"));
-    QPrintPreviewDialog preview(&printer,0); /* 打印预览 */
-   /**
-    * QPrintPreviewDialog类提供了一个打印预览对话框，里面功能比较全，
-    * paintRequested(QPrinter *printer)是系统提供的，
-    * 当preview.exec()执行时该信号被触发，
-    * plotPic(QPrinter *printer)是用户自定义的槽函数，图像的绘制就在这个函数里。
-    */
-   connect(&preview, SIGNAL(paintRequested(QPrinter *)),this,SLOT(plotPic(QPrinter *)));
-
-   preview.exec(); /* 等待预览界面退出 */
-
-//    QPrinter printer;
-//    QString printerName = printer.printerName();
-//    if(printerName.size()==0) return;
-//    QPageSetupDialog pageSetUpdlg(&printer, this);
-    //页面设置
-//    if(pageSetUpdlg.exec()==QDialog::Accepted)
-//    {
-//        printer.setOrientation(QPrinter::Landscape);
-//    }
-//    else
-//    {
-//        printer.setOrientation(QPrinter::Portrait);
-//    }
-//    QPrintDialog dlg(&printer,this);
-    ui->plainTextEdit->print(&printer);
-
-    //打印预览
-//    QPrinter printer(QPrinter::HighResolution);
-//    QPrintPreviewDialog preview(&printer,this);
-//    connect(&preview, SIGNAL(paintRequested(QPrinter *)),this,SLOT(plotPic(QPrinter *)));
-//    QMessageBox msgBox;
-//    msgBox.setText(tr("请选择打印方式"));
-//    msgBox.addButton(tr("输出到文档"),QMessageBox::AcceptRole);
-//    msgBox.addButton(tr("输出到打印机"),QMessageBox::RejectRole);
-//    if(msgBox.exec()==QMessageBox::AcceptRole)
-//      printer.setOutputFormat(QPrinter::PdfFormat);
-//    preview.exec();
-
-//    QPrintDialog printDialog(&printer, this);
-//    if (printDialog.exec() == QDialog::Accepted)
-//    {
-//        QWidget *myForm=new QWidget(this);
-//        myForm->setObjectName(QString::fromUtf8("Form"));
-//        myForm->resize(40, 30);
-//        QTableWidget *tableWidget;
-//        tableWidget = new QTableWidget(myForm);
-//        tableWidget->setColumnCount(3);
-//        tableWidget->setRowCount(4);
-//        tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
-//        tableWidget->setGeometry(QRect(0, 0,40, 30));
-//        QPainter painter(&printer);
-//        //painter.drawPixmap(0, 0, QPixmap::grabWidget(0,0,400,300));
-//        QPixmap image;
-//        image=image.grabWidget(myForm,0,0,40,30);
-//        QRect rect = painter.viewport();
-//        QSize size = image.size();
-//        size.scale(rect.size(), Qt::KeepAspectRatio);     //此处保证图片显示完整
-//        painter.setViewport(rect.x(), rect.y(),size.width(), size.height());
-//        painter.setWindow(image.rect());
-//        painter.drawPixmap(0,0,image);
-//    }
+    QString printerName = printer.printerName();
+    if(printerName.size()==0) return;
+    QPrintDialog *dialog = new QPrintDialog(&printer);
+    dialog->setWindowTitle("print Document");
+    QPrintDialog dlg(&printer,this);
+    QPainter painter;
+    QPcode(&printer,&painter,this->rencode_text);
 }
 void frmMain::on_prit_button_clicked()
 {
-    QPrinter printer(QPrinter::HighResolution);
-    QPrintDialog printDialog(&printer, this);
-         if (printDialog.exec() == QDialog::Accepted) {
-             QWidget *myForm=new QWidget(this);
-             myForm->setObjectName(QString::fromUtf8("Form"));
-             myForm->resize(400, 300);
-             QTableWidget *tableWidget;
-             tableWidget = new QTableWidget(myForm);
-             tableWidget->setColumnCount(3);
-             tableWidget->setRowCount(4);
-             tableWidget->setObjectName(QString::fromUtf8("tableWidget"));
-             tableWidget->setGeometry(QRect(0, 0,400, 300));
-            QPainter painter(&printer);
-            painter.drawPixmap(0, 0, QPixmap::grabWidget(0,0,400,300));
-         }
+
 }

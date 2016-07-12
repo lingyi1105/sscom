@@ -43,6 +43,7 @@ private:
     void open_serialport();
     void close_serialport();
     void QRcode_Encode(QByteArray &text);
+    void QPcode(QPrinter *printer,QPainter *painter,QByteArray &text);
     bool max;           //是否处于最大化状态
     QRect location;     //鼠标移动窗体后的坐标位置
     QColor foreground;
