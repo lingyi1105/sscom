@@ -39,18 +39,6 @@ void frmMain::InitStyle()
     this->setProperty("Form", true);
     this->setProperty("CanMove", true);
     this->setWindowTitle("缇铭科技量产工具V1.0");
-    //设置窗体标题栏隐藏
-    //this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinimizeButtonHint);
-    //安装事件监听器,让标题栏识别鼠标双击
-    //ui->lab_Title->installEventFilter(this);
-
-//    IconHelper::Instance()->SetIcon(ui->btnMenu_Close, QChar(0xf00d));
-//    IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf096));
-//    IconHelper::Instance()->SetIcon(ui->btnMenu_Min, QChar(0xf068));
-//    IconHelper::Instance()->SetIcon(ui->lab_Ico, QChar(0xf015));
-
-//    connect(ui->btnMenu_Close, SIGNAL(clicked()), this, SLOT(close()));
-//    connect(ui->btnMenu_Min, SIGNAL(clicked()), this, SLOT(showMinimized()));
 }
 
 bool frmMain::eventFilter(QObject *obj, QEvent *event)
@@ -84,19 +72,7 @@ void frmMain::QBarcode_ts102(QByteArray &text)
 }
 void frmMain::on_btnMenu_Max_clicked()
 {
-//    if (max) {
-//        this->setGeometry(location);
-//        IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf096));
-//        ui->btnMenu_Max->setToolTip("最大化");
-//        this->setProperty("CanMove", true);
-//    } else {
-//        location = this->geometry();
-//        this->setGeometry(qApp->desktop()->availableGeometry());
-//        IconHelper::Instance()->SetIcon(ui->btnMenu_Max, QChar(0xf079));
-//        ui->btnMenu_Max->setToolTip("还原");
-//        this->setProperty("CanMove", false);
-//    }
-//    max = !max;
+
 }
 void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
 {
@@ -110,8 +86,8 @@ void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
         unsigned char *point = qrcode->data;
         painter->setPen(Qt::NoPen);
         painter->setBrush(this->background);
-        painter->drawRect(0, 0, 80, 80);
-        double scale = (80 - 2.0 * margin) / qrcode->width;
+        painter->drawRect(0, 0, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
+        double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
         painter->setBrush(this->foreground);
         for (int y = 0; y < qrcode->width; y ++) {
             for (int x = 0; x < qrcode->width; x ++) {
@@ -122,6 +98,8 @@ void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
                 point ++;
             }
         }
+        //打印文字
+        painter->drawText(10,10,"weiqifa");
         painter->end();
         point = NULL;
         QRcode_free(qrcode);
@@ -237,8 +215,8 @@ void frmMain::FrameParse(char c)
             this->rencode_text = this->recv_arr;
             if(rencode_text.isEmpty()==false)
             {
-            //QRcode_Encode(this->rencode_text);
-            QBarcode_ts102(this->rencode_text);
+            QRcode_Encode(this->rencode_text);//显示二维码
+            //QBarcode_ts102(this->rencode_text);//显示条形码
             log_output(tr("解析成功"));
             }
             state = 0;
@@ -327,24 +305,24 @@ void frmMain::plotPic(QPrinter *printer)
 void frmMain::on_print_button_clicked()
 {
     //二维码打印
-//    QPrinter printer;
-//    QString printerName = printer.printerName();
-//    if(printerName.size()==0) return;
-//    QPrintDialog *dialog = new QPrintDialog(&printer);
-//    dialog->setWindowTitle("print Document");
-//    QPrintDialog dlg(&printer,this);
-//    QPainter painter;
-//    QPcode(&printer,&painter,this->rencode_text);
-    //条形码显示
     QPrinter printer;
-    log_output("开始打印...");
-    if (this->rencode_text.trimmed().isEmpty())
-        return;
-    QPainter painter(&printer);
-    barcode->setBarcodeType((BarCode::BarcodeTypes)60);
-    barcode->setValue(this->rencode_text);
-    barcode->drawBarcode(&painter, 0, 0, 70,70);
-    painter.end();
+    QString printerName = printer.printerName();
+    if(printerName.size()==0) return;
+    QPrintDialog *dialog = new QPrintDialog(&printer);
+    dialog->setWindowTitle("print Document");
+    QPrintDialog dlg(&printer,this);
+    QPainter painter;
+    QPcode(&printer,&painter,this->rencode_text);
+    //条形码显示
+//    QPrinter printer;
+//    log_output("开始打印...");
+//    if (this->rencode_text.trimmed().isEmpty())
+//        return;
+//    QPainter painter(&printer);
+//    barcode->setBarcodeType((BarCode::BarcodeTypes)60);
+//    barcode->setValue(this->rencode_text);
+//    barcode->drawBarcode(&painter, 0, 0, 70,70);
+//    painter.end();
 }
 void frmMain::on_prit_button_clicked()
 {

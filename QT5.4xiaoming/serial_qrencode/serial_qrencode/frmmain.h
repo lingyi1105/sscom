@@ -56,6 +56,7 @@ private:
     void log_output(QString info);
     void FrameParse(char c);
     QSerialPort *serialport;
+    #define TWODIMENSION_SIZE 50 //定义二维码图像大小
 };
 
 #endif // FRMMAIN_H

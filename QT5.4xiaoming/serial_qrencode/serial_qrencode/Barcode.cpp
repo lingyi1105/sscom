@@ -27,7 +27,7 @@ void BarCode::drawBarcode(QPainter *painter, qreal x, qreal y, qreal width, qrea
 
     //bc.setPrimaryMessage("dprimaryMessage");  //???
     bc->setBorderType((Zint::QZint::BorderType)m_FrameType);  //Тип обрамляющей рамки
-    //bc->setHeight(height);
+    bc->setHeight(height);
     bc->setWidth(width);
     bc->setSecurityLevel(0);
     //bc.setBorderWidth(1);
