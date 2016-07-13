@@ -238,7 +238,7 @@
                <property name="spacing">
                 <number>2</number>
                </property>
-               <item row="1" column="2">
+               <item row="0" column="1" colspan="2">
                 <widget class="QPlainTextEdit" name="plainTextEdit">
                  <property name="enabled">
                   <bool>true</bool>

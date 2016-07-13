@@ -54,6 +54,14 @@ void frmMain::InitForm()
 {
    this->rencode_text = "8A8F298391E1";
    QRcode_Encode(this->rencode_text);
+   //设置调试窗口的字体大小
+   ui->plainTextEdit->setFont(QFont( "宋体" , 10 ,  QFont::Normal) );
+   log_output(tr("开机启动..."));
+   QFile file("macAdress.txt");
+   if(!file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
+   {
+        qDebug()<<"open file failure";
+   }
 }
 //显示条形码
 void frmMain::QBarcode_ts102(QByteArray &text)
@@ -76,17 +84,34 @@ void frmMain::on_btnMenu_Max_clicked()
 }
 void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
 {
-    int margin = 10;
+    int margin = 1;//设置图像的页边距大小
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
     QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
         painter->begin(printer);
+        //打印文字
+        QPen pen;
+        pen.setColor(QColor("#ff00ff"));
+        pen.setWidth(2);
+        painter->setPen(pen);
+
+        QFont font;
+        font.setBold(false);
+        font.setPointSize(10);//设置字体大小
+        font.setFamily("新宋体");
+        painter->setFont(font);
+
+        painter->drawText(QRect(0,0,60,10),Qt::AlignBottom,tr("缇铭科技"));
+        painter->save();//缓存当前的坐标状态
+        //画二维码
         unsigned char *point = qrcode->data;
+        painter->restore();//恢复到之前save的状态
+        painter->translate(0, 10);//坐标平移，向右是X，向下是Y
         painter->setPen(Qt::NoPen);
         painter->setBrush(this->background);
-        painter->drawRect(0, 0, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
+        painter->drawRect(30, 30, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
         double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
         painter->setBrush(this->foreground);
         for (int y = 0; y < qrcode->width; y ++) {
@@ -99,9 +124,32 @@ void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
             }
         }
         //打印文字
-        painter->drawText(10,10,"weiqifa");
+        //QPen pen;
+        pen.setColor(QColor("#ff00ff"));
+        pen.setWidth(2);
+        painter->setPen(pen);
+
+        //QFont font;
+        font.setBold(false);
+        font.setPointSize(6);//设置字体大小
+        font.setFamily("新宋体");
+        painter->setFont(font);
+
+        painter->drawText(QRect(0,30,60,10),Qt::AlignBottom,text);
         painter->end();
         point = NULL;
+        //把mac地址保存到文件里面
+        QFile file("macAdress.txt");
+        if(file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
+        {
+            QTextStream stream( &file );
+            stream << text << "\r\n";
+            file.close();
+        }
+        else
+        {
+            log_output(tr("打开文件失败..."));
+        }
         QRcode_free(qrcode);
     }
 }
@@ -305,6 +353,7 @@ void frmMain::plotPic(QPrinter *printer)
 void frmMain::on_print_button_clicked()
 {
     //二维码打印
+    static int prinCount=0;
     QPrinter printer;
     QString printerName = printer.printerName();
     if(printerName.size()==0) return;
@@ -313,6 +362,8 @@ void frmMain::on_print_button_clicked()
     QPrintDialog dlg(&printer,this);
     QPainter painter;
     QPcode(&printer,&painter,this->rencode_text);
+    prinCount++;
+    log_output(tr("打印第 ")+QString::number(prinCount)+tr(" 次"));
     //条形码显示
 //    QPrinter printer;
 //    log_output("开始打印...");

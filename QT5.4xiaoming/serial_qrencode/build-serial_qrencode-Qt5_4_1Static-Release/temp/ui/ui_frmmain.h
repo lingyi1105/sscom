@@ -215,7 +215,7 @@ public:
         plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
         plainTextEdit->setEnabled(true);
 
-        gridLayout->addWidget(plainTextEdit, 1, 2, 1, 1);
+        gridLayout->addWidget(plainTextEdit, 0, 1, 1, 2);
 
 
         verticalLayout_4->addWidget(groupBox_4);
