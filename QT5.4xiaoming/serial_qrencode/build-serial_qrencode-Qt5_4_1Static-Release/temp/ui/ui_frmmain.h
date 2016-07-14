@@ -63,7 +63,9 @@ public:
     QGroupBox *groupBox;
     QVBoxLayout *verticalLayout_5;
     QLabel *rencode_view;
+    QLabel *rencode_view_2;
     QLineEdit *rencode_lineEdit;
+    QLineEdit *rencode_lineEdit_2;
     QPushButton *print_button;
 
     void setupUi(QDialog *frmMain)

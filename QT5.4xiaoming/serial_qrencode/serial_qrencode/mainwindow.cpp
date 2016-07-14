@@ -44,7 +44,9 @@ void MainWindow::InitStyle()
 void MainWindow::InitForm()
 {
    this->rencode_text = "8A8F298391E1";
+   this->rencode_text_2="E56CEE2E0CB";
    QRcode_Encode(this->rencode_text);
+   QRcode_Encode_2(this->rencode_text_2);
    //设置调试窗口的字体大小
    ui->plainTextEdit->setFont(QFont( "宋体" , 10 ,  QFont::Normal) );
    log_output(tr("开机启动..."));
@@ -52,6 +54,16 @@ void MainWindow::InitForm()
    if(!file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
    {
         qDebug()<<"open file failure";
+   }
+   if(ui->checkBox->isChecked())
+   {
+       ui->rencode_lineEdit_2->setVisible(true);
+       ui->rencode_view_2->setVisible(true);
+   }
+   else
+   {
+       ui->rencode_lineEdit_2->setVisible(false);
+       ui->rencode_view_2->setVisible(false);
    }
 }
 //显示条形码
@@ -141,23 +153,104 @@ void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
         QRcode_free(qrcode);
     }
 }
+void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,QByteArray &text_2)
+{
+    int margin = 1;//设置图像的页边距大小
+    ui->rencode_lineEdit->setText(text);
+    this->foreground = QColor("black");
+    this->background = QColor("white");
+    QPen pen;
+    QFont font;
+    printer->logicalDpiX();
+    QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
+    if(NULL != qrcode) {
+        painter->begin(printer);
+        painter->save();//缓存当前的坐标状态
+        //画二维码
+        unsigned char *point = qrcode->data;
+        painter->translate(LEFT_MARGIN,UP_MARGIN);//坐标平移，向右是X，向下是Y
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(this->background);
+        painter->drawRect(30, 30, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
+        double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
+        painter->setBrush(this->foreground);
+        for (int y = 0; y < qrcode->width; y ++) {
+            for (int x = 0; x < qrcode->width; x ++) {
+                if (*point & 1) {
+                    QRectF r(margin + x * scale, margin + y * scale, scale, scale);
+                    painter->drawRects(&r, 1);
+                }
+                point ++;
+            }
+        }
+        painter->restore();//回到save的位置
+        painter->translate(LEFT_MARGIN+TWODIMENSION_SIZE+TWODIMENSION_INTERVAL,-UP_MARGIN);//坐标平移，向右是X，向下是Y
+        QRcode *qrcode2 = QRcode_encodeString(text_2.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
+        if(NULL != qrcode2) {
+            unsigned char *point = qrcode2->data;
+            painter->translate(0, 10);//坐标平移，向右是X，向下是Y
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(this->background);
+            painter->drawRect(30, 30, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
+            double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode2->width;
+            painter->setBrush(this->foreground);
+            for (int y = 0; y < qrcode2->width; y ++) {
+                for (int x = 0; x < qrcode2->width; x ++) {
+                    if (*point & 1) {
+                        QRectF r(margin + x * scale, margin + y * scale, scale, scale);
+                        painter->drawRects(&r, 1);
+                    }
+                    point ++;
+                }
+            }
+        }
+        //打印文字
+//        //QPen pen;
+//        pen.setColor(QColor("#ff00ff"));
+//        pen.setWidth(2);
+//        painter->setPen(pen);
+
+//        //QFont font;
+//        font.setBold(false);
+//        font.setPointSize(6);//设置字体大小
+//        font.setFamily("新宋体");
+//        painter->setFont(font);
+
+//        painter->drawText(QRect(0,30,60,10),Qt::AlignBottom,text);
+//        painter->end();
+//        point = NULL;
+        //把mac地址保存到文件里面
+        QFile file("macAdress.txt");
+        if(file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
+        {
+            QTextStream stream( &file );
+            stream << text << "\r\n";
+            file.close();
+        }
+        else
+        {
+            log_output(tr("打开文件失败..."));
+        }
+        QRcode_free(qrcode);
+    }
+}
 //二维码显示
 void MainWindow::QRcode_Encode(QByteArray &text)
 {
-    int margin = 10;
+    int margin = MARGIN_VALUE;
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
     QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
-        QPixmap pixmap(400,400);//ui->rencode_view->width(), ui->rencode_view->height());
+        QPixmap pixmap(IMAGE_SIZE,IMAGE_SIZE);//ui->rencode_view->width(), ui->rencode_view->height());
         QPainter painter;
         painter.begin(&pixmap);
         unsigned char *point = qrcode->data;
         painter.setPen(Qt::NoPen);
         painter.setBrush(this->background);
-        painter.drawRect(0, 0, 400, 400);
-        double scale = (400 - 2.0 * margin) / qrcode->width;
+        painter.drawRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+        double scale = (IMAGE_SIZE - 2.0 * margin) / qrcode->width;
         painter.setBrush(this->foreground);
         for (int y = 0; y < qrcode->width; y ++) {
             for (int x = 0; x < qrcode->width; x ++) {
@@ -247,13 +340,41 @@ void MainWindow::FrameParse(char c)
     case 1:
         if(c=='#')
         {
-            this->rencode_text.clear();
-            this->rencode_text = this->recv_arr;
-            if(rencode_text.isEmpty()==false)
+            if(ui->checkBox->isChecked())
             {
-            QRcode_Encode(this->rencode_text);//显示二维码
-            //QBarcode_ts102(this->rencode_text);//显示条形码
-            log_output(tr("解析成功"));
+                static unsigned char dcount=0;
+                if(dcount==0)
+                {
+                    dcount=1;
+                    this->rencode_text.clear();
+                    this->rencode_text = this->recv_arr;
+                    if(rencode_text.isEmpty()==false)
+                    {
+                    QRcode_Encode(this->rencode_text);//显示二维码
+                    log_output(tr("解析成功"));
+                    }
+                }
+                else if(dcount==1)
+                {
+                    dcount=0;
+                    this->rencode_text_2.clear();
+                    this->rencode_text_2 = this->recv_arr;
+                    if(rencode_text_2.isEmpty()==false)
+                    {
+                    QRcode_Encode_2(this->rencode_text_2);//显示二维码
+                    log_output(tr("解析成功"));
+                    }
+                }
+            }
+            else
+            {
+                this->rencode_text.clear();
+                this->rencode_text = this->recv_arr;
+                if(rencode_text.isEmpty()==false)
+                {
+                QRcode_Encode(this->rencode_text);//显示二维码
+                log_output(tr("解析成功"));
+                }
             }
             state = 0;
         }else
@@ -338,17 +459,31 @@ void MainWindow::plotPic(QPrinter *printer)
 void MainWindow::on_print_button_clicked()
 {
     //二维码打印
-    static int prinCount=0;
+    static long prinCount=0;
     QPrinter printer;
     QString printerName = printer.printerName();
-    if(printerName.size()==0) return;
+    if(printerName.size()==0)
+    {
+        log_output("请连接打印机!!!!!");
+        return;
+    }
     QPrintDialog *dialog = new QPrintDialog(&printer);
     dialog->setWindowTitle("print Document");
     QPrintDialog dlg(&printer,this);
     QPainter painter;
-    QPcode(&printer,&painter,this->rencode_text);
-    prinCount++;
-    log_output(tr("打印第 ")+QString::number(prinCount)+tr(" 次"));
+    if(ui->checkBox->isChecked())
+    {
+        prinCount++;
+        log_output(tr("[两张]打印第 ")+QString::number(prinCount)+tr(" 次"));
+        QPcode_2(&printer,&painter,this->rencode_text,this->rencode_text_2);
+    }
+    else
+    {
+        prinCount++;
+        log_output(tr("[单张]打印第 ")+QString::number(prinCount)+tr(" 次"));
+        QPcode(&printer,&painter,this->rencode_text);
+    }
+
     //条形码显示
 //    QPrinter printer;
 //    log_output("开始打印...");
@@ -360,4 +495,57 @@ void MainWindow::on_print_button_clicked()
 //    barcode->drawBarcode(&painter, 0, 0, 70,70);
 //    painter.end();
 }
+//二维码显示
+void MainWindow::QRcode_Encode_2(QByteArray &text)
+{
+    int margin = MARGIN_VALUE;
+    ui->rencode_lineEdit_2->setText(text);
+    this->foreground = QColor("black");
+    this->background = QColor("white");
+    QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
+    if(NULL != qrcode) {
+        QPixmap pixmap(IMAGE_SIZE,IMAGE_SIZE);//ui->rencode_view->width(), ui->rencode_view->height());
+        QPainter painter;
+        painter.begin(&pixmap);
+        unsigned char *point = qrcode->data;
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(this->background);
+        painter.drawRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+        double scale = (IMAGE_SIZE - 2.0 * margin) / qrcode->width;
+        painter.setBrush(this->foreground);
+        for (int y = 0; y < qrcode->width; y ++) {
+            for (int x = 0; x < qrcode->width; x ++) {
+                if (*point & 1) {
+                    QRectF r(margin + x * scale, margin + y * scale, scale, scale);
+                    painter.drawRects(&r, 1);
+                }
+                point ++;
+            }
+        }
+        ui->rencode_view_2->setPixmap(pixmap);
+        painter.end();
+        point = NULL;
+        QRcode_free(qrcode);
+    }
+}
 
+void MainWindow::on_rencode_lineEdit_2_textChanged(const QString &arg1)
+{
+    //QRcode_Encode_2();
+}
+
+void MainWindow::on_checkBox_clicked(bool checked)
+{
+    if(checked)
+    {
+        log_output("打印两张...");
+        ui->rencode_lineEdit_2->setVisible(true);
+        ui->rencode_view_2->setVisible(true);
+    }
+    else
+    {
+        log_output("打印单张...");
+        ui->rencode_lineEdit_2->setVisible(false);
+        ui->rencode_view_2->setVisible(false);
+    }
+}

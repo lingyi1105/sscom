@@ -53,7 +53,9 @@ bool frmMain::eventFilter(QObject *obj, QEvent *event)
 void frmMain::InitForm()
 {
    this->rencode_text = "8A8F298391E1";
+   this->rencode_text_2="E56CEE2E0CB";
    QRcode_Encode(this->rencode_text);
+   QRcode_Encode_2(this->rencode_text_2);
    //设置调试窗口的字体大小
    ui->plainTextEdit->setFont(QFont( "宋体" , 10 ,  QFont::Normal) );
    log_output(tr("开机启动..."));
@@ -156,20 +158,20 @@ void frmMain::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
 //二维码显示
 void frmMain::QRcode_Encode(QByteArray &text)
 {
-    int margin = 10;
+    int margin = MARGIN_VALUE;
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
     QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
-        QPixmap pixmap(400,400);//ui->rencode_view->width(), ui->rencode_view->height());
+        QPixmap pixmap(IMAGE_SIZE,IMAGE_SIZE);//ui->rencode_view->width(), ui->rencode_view->height());
         QPainter painter;
         painter.begin(&pixmap);
         unsigned char *point = qrcode->data;
         painter.setPen(Qt::NoPen);
         painter.setBrush(this->background);
-        painter.drawRect(0, 0, 400, 400);
-        double scale = (400 - 2.0 * margin) / qrcode->width;
+        painter.drawRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+        double scale = (IMAGE_SIZE - 2.0 * margin) / qrcode->width;
         painter.setBrush(this->foreground);
         for (int y = 0; y < qrcode->width; y ++) {
             for (int x = 0; x < qrcode->width; x ++) {
@@ -181,6 +183,39 @@ void frmMain::QRcode_Encode(QByteArray &text)
             }
         }
         ui->rencode_view->setPixmap(pixmap);
+        painter.end();
+        point = NULL;
+        QRcode_free(qrcode);
+    }
+}
+//二维码显示
+void frmMain::QRcode_Encode_2(QByteArray &text)
+{
+    int margin = MARGIN_VALUE;
+    ui->rencode_lineEdit_2->setText(text);
+    this->foreground = QColor("black");
+    this->background = QColor("white");
+    QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
+    if(NULL != qrcode) {
+        QPixmap pixmap(IMAGE_SIZE,IMAGE_SIZE);//ui->rencode_view->width(), ui->rencode_view->height());
+        QPainter painter;
+        painter.begin(&pixmap);
+        unsigned char *point = qrcode->data;
+        painter.setPen(Qt::NoPen);
+        painter.setBrush(this->background);
+        painter.drawRect(0, 0, IMAGE_SIZE, IMAGE_SIZE);
+        double scale = (IMAGE_SIZE - 2.0 * margin) / qrcode->width;
+        painter.setBrush(this->foreground);
+        for (int y = 0; y < qrcode->width; y ++) {
+            for (int x = 0; x < qrcode->width; x ++) {
+                if (*point & 1) {
+                    QRectF r(margin + x * scale, margin + y * scale, scale, scale);
+                    painter.drawRects(&r, 1);
+                }
+                point ++;
+            }
+        }
+        ui->rencode_view_2->setPixmap(pixmap);
         painter.end();
         point = NULL;
         QRcode_free(qrcode);
