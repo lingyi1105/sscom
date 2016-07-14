@@ -57,7 +57,7 @@ void frmMain::InitForm()
    //设置调试窗口的字体大小
    ui->plainTextEdit->setFont(QFont( "宋体" , 10 ,  QFont::Normal) );
    log_output(tr("开机启动..."));
-   QFile file("macAdress.txt");
+   QFile file("macAdress.xlsx");
    if(!file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
    {
         qDebug()<<"open file failure";

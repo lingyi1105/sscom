@@ -16,12 +16,6 @@ DEFINES += _CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS
 QMAKE_CXXFLAGS += -Wno-sign-compare
 
 SOURCES += main.cpp\
-        frmmain.cpp \
-    api/iconhelper.cpp \
-    api/app.cpp \
-    api/appinit.cpp \
-    usercontrol/frmmessagebox.cpp \
-    usercontrol/frminputbox.cpp\
     qrencode/bitstream.c \
     qrencode/mask.c \
     qrencode/mmask.c \
@@ -63,15 +57,10 @@ SOURCES += main.cpp\
     backend/rss.c \
     backend/svg.c \
     backend/telepen.c \
-    backend/upcean.c
+    backend/upcean.c \
+    mainwindow.cpp
 	
-HEADERS  += frmmain.h \
-    api/iconhelper.h \
-    api/myhelper.h \
-    api/app.h \
-    api/appinit.h \
-    usercontrol/frmmessagebox.h \    
-    usercontrol/frminputbox.h\
+HEADERS  += \
     qrencode/bitstream.h \
     qrencode/config.h \
     qrencode/mask.h \
@@ -104,11 +93,10 @@ HEADERS  += frmmain.h \
     backend/reedsol.h \
     backend/rss.h \
     backend/sjis.h \
-    backend/zint.h
+    backend/zint.h \
+    mainwindow.h
 	
-FORMS    += frmmain.ui \
-    usercontrol/frmmessagebox.ui \
-    usercontrol/frminputbox.ui
+FORMS    +=  mainwindow.ui
 
 INCLUDEPATH += $$PWD
 INCLUDEPATH += $$PWD/usercontrol
@@ -121,7 +109,6 @@ DESTDIR         = bin
 
 win32:RC_FILE   = other/main.rc
 
-RESOURCES += \
-    other/rc.qrc
+
 INCLUDEPATH += $$PWD/backend
 DEPENDPATH += $$PWD/backend
