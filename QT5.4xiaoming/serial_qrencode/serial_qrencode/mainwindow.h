@@ -71,7 +71,7 @@ private:
      * *************************************/
     #define D_MARGIN_VALUE 0
     #define D_DPI 25.5 //毫米和像素的转换
-    #define D_PARAMETER 3.7666
+    #define D_PARAMETER 3.775
     #define D_TWODIMENSION_SIZE 13*D_PARAMETER //定义打印二维码图像大小
     #define D_LEFT_MARGIN 2.29*D_PARAMETER  //左边距2.29mm
     #define D_UP_MARGIN 1.89*D_PARAMETER
@@ -82,7 +82,7 @@ private:
      * *************************************/
     #define S_MARGIN_VALUE 0
     #define S_DPI 25.4
-    #define S_PARAMETER 3.7666
+    #define S_PARAMETER 3.775
     #define S_UP_MARGIN 1.86*S_PARAMETER
     #define S_LEFT_MARGIN 1.67*S_PARAMETER
     #define S_TEXT_TWODIMENSION 1.7*S_PARAMETER
