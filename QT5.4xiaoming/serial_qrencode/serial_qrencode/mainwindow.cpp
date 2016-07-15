@@ -84,35 +84,23 @@ void MainWindow::QBarcode_ts102(QByteArray &text)
 
 void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
 {
+    QPen pen;
+    QFont font;
     int margin = 1;//设置图像的页边距大小
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
+    painter->translate(0, 0);//先回到坐标原点
     QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
         painter->begin(printer);
-        //打印文字
-        QPen pen;
-        pen.setColor(QColor("#ff00ff"));
-        pen.setWidth(2);
-        painter->setPen(pen);
-
-        QFont font;
-        font.setBold(false);
-        font.setPointSize(10);//设置字体大小
-        font.setFamily("新宋体");
-        painter->setFont(font);
-
-        painter->drawText(QRect(0,0,60,10),Qt::AlignBottom,tr("缇铭科技"));
-        painter->save();//缓存当前的坐标状态
         //画二维码
         unsigned char *point = qrcode->data;
-        painter->restore();//恢复到之前save的状态
-        painter->translate(0, 10);//坐标平移，向右是X，向下是Y
+        painter->translate(S_LEFT_MARGIN, S_UP_MARGIN);//坐标平移，向右是X，向下是Y
         painter->setPen(Qt::NoPen);
         painter->setBrush(this->background);
-        painter->drawRect(30, 30, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
-        double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
+        painter->drawRect(0, 0, S_TWODIMENSION_SIZE, S_TWODIMENSION_SIZE);
+        double scale = (S_TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
         painter->setBrush(this->foreground);
         for (int y = 0; y < qrcode->width; y ++) {
             for (int x = 0; x < qrcode->width; x ++) {
@@ -125,17 +113,18 @@ void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
         }
         //打印文字
         //QPen pen;
-        pen.setColor(QColor("#ff00ff"));
-        pen.setWidth(2);
-        painter->setPen(pen);
+//        pen.setColor(QColor("#ff00ff"));
+//        pen.setWidth(2);
+//        painter->setPen(pen);
 
-        //QFont font;
-        font.setBold(false);
-        font.setPointSize(6);//设置字体大小
-        font.setFamily("新宋体");
-        painter->setFont(font);
+//        //QFont font;
+//        font.setBold(false);
+//        font.setPointSize(6);//设置字体大小
+//        font.setFamily("新宋体");
+//        painter->setFont(font);
 
-        painter->drawText(QRect(0,30,60,10),Qt::AlignBottom,text);
+//        painter->drawText(QRect(0,30,60,10),Qt::AlignBottom,text);
+        //结束打印
         painter->end();
         point = NULL;
         //把mac地址保存到文件里面
@@ -155,24 +144,36 @@ void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
 }
 void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,QByteArray &text_2)
 {
-    int margin = 1;//设置图像的页边距大小
+    int margin = D_MARGIN_VALUE;//设置图像的页边距大小
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
     QPen pen;
     QFont font;
+
     printer->logicalDpiX();
+
     QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
         painter->begin(printer);
+        QRect pRect = painter->viewport();
+        painter->setViewport(pRect.x(),pRect.y(),VIEWSIZE_WITH,VIEWWIZE_HIGHT);
+        painter->setWindow(pRect.x(),pRect.y(),WINDONWSIZE_WITH,WINDONWSIZE_HIGHT);
+        painter->translate(0,0);//移动到原点
         painter->save();//缓存当前的坐标状态
+//        QRect rect1 = painter->viewport();
+//        QRect wind1 = painter->window();
+//        qDebug("viewdebug:rect.x %d rect.y %d rect.width %d rect.height %d",&rect1.x,&rect1.y,&rect1.width,&rect1.height);
+//        qDebug("windowdebug:wind1.x %d wind1.y %d wind1.width %d wind1.height %d",&wind1.x,&wind1.y,&wind1.width,&wind1.height);
+        qDebug("printer.x %d printer.y %d",printer->pageRect().x(),printer->pageRect().y());
+        qDebug("printer.w %d printer.h %d",printer->pageRect().width(),printer->pageRect().height());
         //画二维码
         unsigned char *point = qrcode->data;
-        painter->translate(LEFT_MARGIN,UP_MARGIN);//坐标平移，向右是X，向下是Y
+        painter->translate(D_LEFT_MARGIN,D_UP_MARGIN);//坐标平移，向右是X，向下是Y
         painter->setPen(Qt::NoPen);
         painter->setBrush(this->background);
-        painter->drawRect(30, 30, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
-        double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
+        painter->drawRect(0, 0, D_TWODIMENSION_SIZE, D_TWODIMENSION_SIZE);
+        double scale = (D_TWODIMENSION_SIZE - 2.0 * margin) / qrcode->width;
         painter->setBrush(this->foreground);
         for (int y = 0; y < qrcode->width; y ++) {
             for (int x = 0; x < qrcode->width; x ++) {
@@ -184,15 +185,16 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
             }
         }
         painter->restore();//回到save的位置
-        painter->translate(LEFT_MARGIN+TWODIMENSION_SIZE+TWODIMENSION_INTERVAL,-UP_MARGIN);//坐标平移，向右是X，向下是Y
+        qDebug("printer.x %d printer.y %d",printer->pageRect().x(),printer->pageRect().y());
+        qDebug("printer.w %d printer.h %d",printer->pageRect().width(),printer->pageRect().height());
+        painter->translate(D_LEFT_MARGIN+D_TWODIMENSION_SIZE+D_TWODIMENSION_INTERVAL,D_UP_MARGIN);//坐标平移，向右是X，向下是Y
         QRcode *qrcode2 = QRcode_encodeString(text_2.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
         if(NULL != qrcode2) {
             unsigned char *point = qrcode2->data;
-            painter->translate(0, 10);//坐标平移，向右是X，向下是Y
             painter->setPen(Qt::NoPen);
             painter->setBrush(this->background);
-            painter->drawRect(30, 30, TWODIMENSION_SIZE, TWODIMENSION_SIZE);
-            double scale = (TWODIMENSION_SIZE - 2.0 * margin) / qrcode2->width;
+            painter->drawRect(0, 0, D_TWODIMENSION_SIZE, D_TWODIMENSION_SIZE);
+            double scale = (D_TWODIMENSION_SIZE - 2.0 * margin) / qrcode2->width;
             painter->setBrush(this->foreground);
             for (int y = 0; y < qrcode2->width; y ++) {
                 for (int x = 0; x < qrcode2->width; x ++) {
@@ -205,12 +207,9 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
             }
         }
         //打印文字
-//        //QPen pen;
 //        pen.setColor(QColor("#ff00ff"));
 //        pen.setWidth(2);
 //        painter->setPen(pen);
-
-//        //QFont font;
 //        font.setBold(false);
 //        font.setPointSize(6);//设置字体大小
 //        font.setFamily("新宋体");
@@ -237,7 +236,7 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
 //二维码显示
 void MainWindow::QRcode_Encode(QByteArray &text)
 {
-    int margin = MARGIN_VALUE;
+    int margin = D_MARGIN_VALUE;
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
@@ -461,6 +460,13 @@ void MainWindow::on_print_button_clicked()
     //二维码打印
     static long prinCount=0;
     QPrinter printer;
+    //设置纸张大小
+    printer.setPageSize(QPagedPaintDevice::Custom);
+//    printer.setPaperSize(QSizeF(30,10),QPrinter::Inch);
+    printer.setPaperSize(QSizeF(40,30),QPrinter::Millimeter);
+
+    qDebug("printer.x %d printer.y %d",printer.pageRect().x(),printer.pageRect().y());
+    qDebug("printer.w %d printer.h %d",printer.pageRect().width(),printer.pageRect().height());
     QString printerName = printer.printerName();
     if(printerName.size()==0)
     {
@@ -471,6 +477,8 @@ void MainWindow::on_print_button_clicked()
     dialog->setWindowTitle("print Document");
     QPrintDialog dlg(&printer,this);
     QPainter painter;
+
+
     if(ui->checkBox->isChecked())
     {
         prinCount++;
@@ -498,7 +506,7 @@ void MainWindow::on_print_button_clicked()
 //二维码显示
 void MainWindow::QRcode_Encode_2(QByteArray &text)
 {
-    int margin = MARGIN_VALUE;
+    int margin = D_MARGIN_VALUE;
     ui->rencode_lineEdit_2->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
