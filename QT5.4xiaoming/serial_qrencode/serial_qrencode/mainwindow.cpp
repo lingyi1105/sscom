@@ -90,10 +90,15 @@ void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
     ui->rencode_lineEdit->setText(text);
     this->foreground = QColor("black");
     this->background = QColor("white");
-    painter->translate(0, 0);//先回到坐标原点
+
     QRcode *qrcode = QRcode_encodeString(text.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
     if(NULL != qrcode) {
         painter->begin(printer);
+        QRect pRect = painter->viewport();
+        painter->setViewport(pRect.x(),pRect.y(),VIEWSIZE_WITH,VIEWWIZE_HIGHT);
+        painter->setWindow(pRect.x(),pRect.y(),WINDONWSIZE_WITH,WINDONWSIZE_HIGHT);
+        painter->translate(0, 0);//先回到坐标原点
+        painter->save();
         //画二维码
         unsigned char *point = qrcode->data;
         painter->translate(S_LEFT_MARGIN, S_UP_MARGIN);//坐标平移，向右是X，向下是Y
@@ -112,18 +117,16 @@ void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
             }
         }
         //打印文字
-        //QPen pen;
-//        pen.setColor(QColor("#ff00ff"));
-//        pen.setWidth(2);
-//        painter->setPen(pen);
-
-//        //QFont font;
-//        font.setBold(false);
-//        font.setPointSize(6);//设置字体大小
-//        font.setFamily("新宋体");
-//        painter->setFont(font);
-
-//        painter->drawText(QRect(0,30,60,10),Qt::AlignBottom,text);
+        painter->restore();
+        painter->translate(S_LEFT_MARGIN, S_TWODIMENSION_SIZE+S_UP_MARGIN+S_PITURE_B_TEXT);
+        pen.setColor(QColor("#ff00ff"));
+        pen.setWidth(1);
+        painter->setPen(pen);
+        font.setBold(false);
+        font.setPointSize(5);//设置字体大小
+        font.setFamily("新宋体");
+        painter->setFont(font);
+        painter->drawText(0,0,text);
         //结束打印
         painter->end();
         point = NULL;
@@ -161,10 +164,6 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
         painter->setWindow(pRect.x(),pRect.y(),WINDONWSIZE_WITH,WINDONWSIZE_HIGHT);
         painter->translate(0,0);//移动到原点
         painter->save();//缓存当前的坐标状态
-//        QRect rect1 = painter->viewport();
-//        QRect wind1 = painter->window();
-//        qDebug("viewdebug:rect.x %d rect.y %d rect.width %d rect.height %d",&rect1.x,&rect1.y,&rect1.width,&rect1.height);
-//        qDebug("windowdebug:wind1.x %d wind1.y %d wind1.width %d wind1.height %d",&wind1.x,&wind1.y,&wind1.width,&wind1.height);
         qDebug("printer.x %d printer.y %d",printer->pageRect().x(),printer->pageRect().y());
         qDebug("printer.w %d printer.h %d",printer->pageRect().width(),printer->pageRect().height());
         //画二维码
@@ -184,9 +183,24 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
                 point ++;
             }
         }
+        //打印文字
         painter->restore();//回到save的位置
+        painter->save();//缓存当前的坐标状态
+        painter->translate(D_LEFT_MARGIN,D_TWODIMENSION_SIZE+D_UP_MARGIN+D_PITURE_B_TEXT);
+        pen.setColor(QColor("#ff00ff"));
+        pen.setWidth(1);
+        painter->setPen(pen);
+        font.setBold(false);
+        font.setPointSize(5);//设置字体大小
+        font.setFamily("新宋体");
+        painter->setFont(font);
+        painter->drawText(0,0,text);
+
         qDebug("printer.x %d printer.y %d",printer->pageRect().x(),printer->pageRect().y());
         qDebug("printer.w %d printer.h %d",printer->pageRect().width(),printer->pageRect().height());
+        //打印二维码
+        painter->restore();//回到save的位置
+        painter->save();//缓存当前的坐标状态
         painter->translate(D_LEFT_MARGIN+D_TWODIMENSION_SIZE+D_TWODIMENSION_INTERVAL,D_UP_MARGIN);//坐标平移，向右是X，向下是Y
         QRcode *qrcode2 = QRcode_encodeString(text_2.data(), 1, QR_ECLEVEL_L, QR_MODE_8, 1);
         if(NULL != qrcode2) {
@@ -207,17 +221,20 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
             }
         }
         //打印文字
-//        pen.setColor(QColor("#ff00ff"));
-//        pen.setWidth(2);
-//        painter->setPen(pen);
-//        font.setBold(false);
-//        font.setPointSize(6);//设置字体大小
-//        font.setFamily("新宋体");
-//        painter->setFont(font);
-
-//        painter->drawText(QRect(0,30,60,10),Qt::AlignBottom,text);
-//        painter->end();
-//        point = NULL;
+        painter->restore();//回到save的位置
+        painter->save();//缓存当前的坐标状态
+        painter->translate(D_LEFT_MARGIN+D_TWODIMENSION_SIZE+D_TWODIMENSION_INTERVAL,D_TWODIMENSION_SIZE+D_UP_MARGIN+D_PITURE_B_TEXT);
+        pen.setColor(QColor("#ff00ff"));
+        pen.setWidth(1);
+        painter->setPen(pen);
+        font.setBold(false);
+        font.setPointSize(5);//设置字体大小
+        font.setFamily("新宋体");
+        painter->setFont(font);
+        painter->drawText(0,0,text_2);
+        //结束打印
+        painter->end();
+        point = NULL;
         //把mac地址保存到文件里面
         QFile file("macAdress.txt");
         if(file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
@@ -463,7 +480,7 @@ void MainWindow::on_print_button_clicked()
     //设置纸张大小
     printer.setPageSize(QPagedPaintDevice::Custom);
 //    printer.setPaperSize(QSizeF(30,10),QPrinter::Inch);
-    printer.setPaperSize(QSizeF(40,30),QPrinter::Millimeter);
+    printer.setPaperSize(QSizeF(PAPER_WIDTH,PAPER_HIGHT),QPrinter::Millimeter);
 
     qDebug("printer.x %d printer.y %d",printer.pageRect().x(),printer.pageRect().y());
     qDebug("printer.w %d printer.h %d",printer.pageRect().width(),printer.pageRect().height());
