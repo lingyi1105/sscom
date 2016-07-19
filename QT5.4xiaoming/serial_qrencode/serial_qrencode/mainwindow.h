@@ -79,6 +79,7 @@ private:
     #define D_UP_MARGIN 1.0*D_PARAMETER
     #define D_TWODIMENSION_INTERVAL 3.58*D_PARAMETER
     #define D_PITURE_B_TEXT 1.7*D_PARAMETER //二维码和文字的距离
+    #define D_TEXT_SIZE 4//字体大小
     /***************************************
      * 单张规格：
      * 上边距：1.86mm   左边距：1.67mm  二维码到文字的距离：1.7mm 二维码大小：12mmx12mm
@@ -88,9 +89,11 @@ private:
     #define S_PARAMETER 3.775
     #define S_UP_MARGIN 1.0*S_PARAMETER
     #define S_LEFT_MARGIN 1.67*S_PARAMETER
+    #define S_LEFT_MARGIN_TEXT 1.67*S_PARAMETER+1.0 //文字的左边距
     #define S_TEXT_TWODIMENSION 1.7*S_PARAMETER
     #define S_TWODIMENSION_SIZE 10*S_PARAMETER
     #define S_PITURE_B_TEXT 1.7*D_PARAMETER //二维码和文字的距离
+    #define S_TEXT_SIZE 4 //字体大小
 };
 
 #endif // MAINWINDOW_H

@@ -118,12 +118,12 @@ void MainWindow::QPcode( QPrinter *printer,QPainter *painter,QByteArray &text)
         }
         //打印文字
         painter->restore();
-        painter->translate(S_LEFT_MARGIN, S_TWODIMENSION_SIZE+S_UP_MARGIN+S_PITURE_B_TEXT);
+        painter->translate(S_LEFT_MARGIN_TEXT, S_TWODIMENSION_SIZE+S_UP_MARGIN+S_PITURE_B_TEXT);
         pen.setColor(QColor("#ff00ff"));
         pen.setWidth(1);
         painter->setPen(pen);
         font.setBold(false);
-        font.setPointSize(5);//设置字体大小
+        font.setPointSize(S_TEXT_SIZE);//设置字体大小
         font.setFamily("新宋体");
         painter->setFont(font);
         painter->drawText(0,0,text);
@@ -191,7 +191,7 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
         pen.setWidth(1);
         painter->setPen(pen);
         font.setBold(false);
-        font.setPointSize(5);//设置字体大小
+        font.setPointSize(D_TEXT_SIZE);//设置字体大小
         font.setFamily("新宋体");
         painter->setFont(font);
         painter->drawText(0,0,text);
@@ -228,7 +228,7 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
         pen.setWidth(1);
         painter->setPen(pen);
         font.setBold(false);
-        font.setPointSize(5);//设置字体大小
+        font.setPointSize(D_TEXT_SIZE);//设置字体大小
         font.setFamily("新宋体");
         painter->setFont(font);
         painter->drawText(0,0,text_2);
