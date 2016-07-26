@@ -10,6 +10,7 @@
 #include "Barcode.h"
 #include <QtDebug>
 #include <QDateTime>
+#include <QProcess>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -65,6 +66,7 @@ void MainWindow::InitForm()
        ui->rencode_lineEdit_2->setVisible(false);
        ui->rencode_view_2->setVisible(false);
    }
+   ui->groupBox_2->setVisible(false);//隐藏串口设置控件
 }
 //显示条形码
 void MainWindow::QBarcode_ts102(QByteArray &text)
@@ -463,7 +465,7 @@ void MainWindow::on_open_port_Button_clicked()
 void MainWindow::log_output(QString info)
 {
     QString time= QDateTime::currentDateTime ().toString ("yyyy-MM-dd hh:mm:ss");
-    ui->plainTextEdit->appendPlainText(tr("[%1] %2").arg (time).arg (info));
+    ui->plainTextEdit->appendPlainText(tr("[%1]\r\n%2").arg(time).arg (info));
 }
 
 
@@ -471,15 +473,161 @@ void MainWindow::plotPic(QPrinter *printer)
 {
     log_output("开始打印...");
 }
+//函 数 名：HexToAsc()
+//功能描述：把16进制转换为ASCII
+char MainWindow::IntToStr(char aChar)
+{
+    char ss;
+    printf("%s %d\n",__FUNCTION__,aChar);
+    switch(aChar)
+    {
+        case 0: ss= '0';break;
+        case 1: ss= '1';break;
+        case 2: ss= '2';break;
+        case 3: ss= '3';break;
+        case 4: ss= '4';break;
+        case 5: ss= '5';break;
+        case 6: ss= '6';break;
+        case 7: ss= '7';break;
+        case 8: ss= '8';break;
+        case 9: ss= '9';break;
 
+        case 10: ss= 'A';break;
+        case 11: ss= 'B';break;
+        case 12: ss= 'C';break;
+        case 13: ss= 'D';break;
+        case 14: ss= 'E';break;
+        case 15: ss= 'F';break;
+        default:break;
+    }
+    printf("%s %c\n",__FUNCTION__,ss);
+    return ss;
+}
+//函 数 名：StrToInt()
+//功能描述：把字符转换成对应的数字，比如a转换成10
+char MainWindow::StrToInt(char aChar)
+{
+    char ss;
+    printf("%s %c\n",__FUNCTION__,aChar);
+    switch(aChar)
+    {
+        case '0': ss= 0;break;
+        case '1': ss= 1;break;
+        case '2': ss= 2;break;
+        case '3': ss= 3;break;
+        case '4': ss= 4;break;
+        case '5': ss= 5;break;
+        case '6': ss= 6;break;
+        case '7': ss= 7;break;
+        case '8': ss= 8;break;
+        case '9': ss= 9;break;
+
+        case 'A': ss= 10;break;
+        case 'B': ss= 11;break;
+        case 'C': ss= 12;break;
+        case 'D': ss= 13;break;
+        case 'E': ss= 14;break;
+        case 'F': ss= 15;break;
+        default:break;
+    }
+    printf("%s %d\n",__FUNCTION__,ss);
+    return ss;
+}
 void MainWindow::on_print_button_clicked()
 {
+   QByteArray readCm;
+   QByteArray readCmd;
+   QByteArray readCmdMac;
+   char readCharMac;
+   int i=0;
+   static int pTwoFlag=0;
+
+   //执行cmd的相关命令
+   QProcess p(0);
+   p.start(READ_MAC_CMD);
+   p.waitForStarted();
+   p.waitForFinished();
+   //获取MAC地址
+   readCm  = p.readAllStandardOutput().trimmed();
+   qDebug()<<readCm;
+   //判断数据是否正确，不正确就返回
+   if(readCm.size()<5)
+   {
+        log_output(tr("查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
+        return;
+   }
+
+   readCmd = readCm.mid(15,17);
+   //去掉空格
+   readCmdMac.resize(12);
+   for(int j=0;j<readCmd.size();j++)
+   {
+       if(readCmd.at(j)!=' ')
+       {
+           readCmdMac[i++]=(readCmd.at(j));
+       }
+   }
+   readCmdMac[i]='\0';
+   //把最后一个字节的那个位改变一下
+   //qDebug("%x",readCmdMac.data()[10]);
+   readCharMac=readCmdMac.data()[10];
+   readCharMac=StrToInt(readCharMac);
+   //qDebug("%x",readCharMac);
+   readCharMac|=0xC;
+   //qDebug("%x",readCharMac);
+   readCmdMac.data()[10]=IntToStr(readCharMac);
+   //qDebug()<<readCmdMac.data()[10];
+   qDebug()<<readCmdMac;
+   qDebug("%d",readCmdMac.size());
+   if(readCmdMac.size()<13)
+   {
+       log_output(tr("查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
+       return;
+   }
+   if(ui->checkBox->isChecked())
+   {
+       if(pTwoFlag==0)
+       {
+           pTwoFlag=1;
+           ui->rencode_lineEdit->setText(readCmdMac);
+           this->rencode_text=readCmdMac;
+           log_output(tr("MacNo.1:")+readCmdMac);
+           ui->print_button->setText("再次读取一次，并打印");
+           return;
+       }
+       else if(pTwoFlag==1)
+       {
+           pTwoFlag=2;
+           ui->rencode_lineEdit_2->setText(readCmdMac);
+           this->rencode_text_2=readCmdMac;
+           log_output(tr("MacNo.2:")+readCmdMac);
+           ui->print_button->setText("打印");
+       }
+   }
+   else
+   {
+       ui->rencode_lineEdit->setText(readCmdMac);
+       this->rencode_text=readCmdMac;
+       log_output(tr("MacNo.1:")+readCmdMac);
+   }
+   if(ui->checkBox->isChecked())
+   {
+       if(pTwoFlag==2)
+       {
+           pTwoFlag=0;
+       }
+       else
+       {
+           log_output(tr("两次数据不够，请重新开始打印！"));
+           return;
+       }
+   }
+#if 1
     //二维码打印
     static long prinCount=0;
     QPrinter printer;
     //设置纸张大小
     printer.setPageSize(QPagedPaintDevice::Custom);
-//    printer.setPaperSize(QSizeF(30,10),QPrinter::Inch);
     printer.setPaperSize(QSizeF(PAPER_WIDTH,PAPER_HIGHT),QPrinter::Millimeter);
 
     qDebug("printer.x %d printer.y %d",printer.pageRect().x(),printer.pageRect().y());
@@ -495,7 +643,6 @@ void MainWindow::on_print_button_clicked()
     QPrintDialog dlg(&printer,this);
     QPainter painter;
 
-
     if(ui->checkBox->isChecked())
     {
         prinCount++;
@@ -508,7 +655,7 @@ void MainWindow::on_print_button_clicked()
         log_output(tr("[单张]打印第 ")+QString::number(prinCount)+tr(" 次"));
         QPcode(&printer,&painter,this->rencode_text);
     }
-
+#endif
     //条形码显示
 //    QPrinter printer;
 //    log_output("开始打印...");

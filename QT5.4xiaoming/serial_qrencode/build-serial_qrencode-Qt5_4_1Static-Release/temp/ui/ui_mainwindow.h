@@ -61,8 +61,8 @@ public:
     QPushButton *check_port_Button;
     QGroupBox *groupBox_4;
     QGridLayout *gridLayout;
-    QPlainTextEdit *plainTextEdit;
     QCheckBox *checkBox;
+    QPlainTextEdit *plainTextEdit;
     QGroupBox *groupBox;
     QVBoxLayout *verticalLayout_5;
     QHBoxLayout *horizontalLayout;
@@ -99,6 +99,7 @@ public:
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(groupBox_3->sizePolicy().hasHeightForWidth());
         groupBox_3->setSizePolicy(sizePolicy1);
+        groupBox_3->setLayoutDirection(Qt::LeftToRight);
         horizontalLayout_5 = new QHBoxLayout(groupBox_3);
         horizontalLayout_5->setObjectName(QStringLiteral("horizontalLayout_5"));
         widget = new QWidget(groupBox_3);
@@ -222,6 +223,9 @@ public:
 
         horizontalLayout_4->addWidget(check_port_Button);
 
+        layoutWidget->raise();
+        layoutWidget_2->raise();
+        layoutWidget_3->raise();
 
         verticalLayout_4->addWidget(groupBox_2);
 
@@ -235,12 +239,6 @@ public:
         gridLayout->setSpacing(2);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         gridLayout->setContentsMargins(5, 16, 5, 5);
-        plainTextEdit = new QPlainTextEdit(groupBox_4);
-        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
-        plainTextEdit->setEnabled(true);
-
-        gridLayout->addWidget(plainTextEdit, 1, 1, 1, 2);
-
         checkBox = new QCheckBox(groupBox_4);
         checkBox->setObjectName(QStringLiteral("checkBox"));
         sizePolicy2.setHeightForWidth(checkBox->sizePolicy().hasHeightForWidth());
@@ -251,8 +249,15 @@ public:
         font.setBold(false);
         font.setWeight(50);
         checkBox->setFont(font);
+        checkBox->setChecked(true);
 
         gridLayout->addWidget(checkBox, 0, 1, 1, 1);
+
+        plainTextEdit = new QPlainTextEdit(groupBox_4);
+        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
+        plainTextEdit->setEnabled(true);
+
+        gridLayout->addWidget(plainTextEdit, 1, 1, 1, 2);
 
 
         verticalLayout_4->addWidget(groupBox_4);

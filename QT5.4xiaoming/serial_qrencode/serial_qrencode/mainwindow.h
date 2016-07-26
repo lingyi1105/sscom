@@ -45,7 +45,8 @@ private:
     void QBarcode_ts102(QByteArray &text);//条形码显示
     void QPcode(QPrinter *printer,QPainter *painter,QByteArray &text);//单张二维码打印
     void QPcode_2(QPrinter *printer,QPainter *painter,QByteArray &text,QByteArray &text_2);//两张二维码打印
-
+    char IntToStr(char aChar);
+    char StrToInt(char aChar);
     QRect location;     //鼠标移动窗体后的坐标位置
     QColor foreground;
     QColor background;
@@ -94,6 +95,9 @@ private:
     #define S_TWODIMENSION_SIZE 10*S_PARAMETER
     #define S_PITURE_B_TEXT 1.7*D_PARAMETER //二维码和文字的距离
     #define S_TEXT_SIZE 4 //字体大小
+
+    #define READ_MAC_CMD "nrfjprog.exe --memrd 0x100000a3 --n 7"
+    #define CMD_OFFSIZE 4
 };
 
 #endif // MAINWINDOW_H
