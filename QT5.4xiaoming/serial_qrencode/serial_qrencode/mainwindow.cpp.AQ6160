@@ -663,18 +663,18 @@ void MainWindow::on_print_button_clicked()
     //打印完一次后清空数据
     if(ui->checkBox->isChecked())
     {
-//        this->rencode_text  =" ";
-//        this->rencode_text_2=" ";
-//        ui->rencode_lineEdit->setText("");
-//        ui->rencode_lineEdit_2->setText("");
-//        QRcode_Encode(this->rencode_text);
-//        QRcode_Encode_2(this->rencode_text_2);
+        this->rencode_text  =" ";
+        this->rencode_text_2=" ";
+        ui->rencode_lineEdit->setText("");
+        ui->rencode_lineEdit_2->setText("");
+        QRcode_Encode(this->rencode_text);
+        QRcode_Encode_2(this->rencode_text_2);
     }
     else
     {
-//        this->rencode_text  =" ";
-//        ui->rencode_lineEdit->setText("");
-//        QRcode_Encode(this->rencode_text);
+        this->rencode_text  =" ";
+        ui->rencode_lineEdit->setText("");
+        QRcode_Encode(this->rencode_text);
     }
     //条形码显示
 //    QPrinter printer;
