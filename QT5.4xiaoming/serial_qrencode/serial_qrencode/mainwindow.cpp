@@ -38,7 +38,7 @@ void MainWindow::InitStyle()
     this->location = this->geometry();
     this->setProperty("Form", true);
     this->setProperty("CanMove", true);
-    this->setWindowTitle("缇铭科技量产工具V1.0");
+    this->setWindowTitle(EXE_NAME);
 }
 
 
@@ -243,6 +243,7 @@ void MainWindow::QPcode_2( QPrinter *printer,QPainter *painter,QByteArray &text,
         {
             QTextStream stream( &file );
             stream << text << "\r\n";
+            stream << text_2 << "\r\n";
             file.close();
         }
         else
@@ -549,11 +550,16 @@ void MainWindow::on_print_button_clicked()
    p.waitForFinished();
    //获取MAC地址
    readCm  = p.readAllStandardOutput().trimmed();
+   //复位 如果不复位的话，板子现在在烧录模式，灯还一直亮着
+   p.start(RESET_CMD);
+   p.waitForStarted();
+   p.waitForFinished();
    qDebug()<<readCm;
    //判断数据是否正确，不正确就返回
    if(readCm.size()<5)
    {
-        log_output(tr("查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
+        log_output(readCmdMac);
+        log_output(tr("1查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
         return;
    }
 
@@ -581,7 +587,8 @@ void MainWindow::on_print_button_clicked()
    qDebug("%d",readCmdMac.size());
    if(readCmdMac.size()<13)
    {
-       log_output(tr("查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
+       log_output(readCmdMac);
+       log_output(tr("2查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
        return;
    }
    if(ui->checkBox->isChecked())
@@ -660,6 +667,7 @@ void MainWindow::on_print_button_clicked()
         QPcode(&printer,&painter,this->rencode_text);
     }
 #endif
+
     //打印完一次后清空数据
     if(ui->checkBox->isChecked())
     {
