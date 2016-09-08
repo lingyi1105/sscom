@@ -11,6 +11,7 @@
 #include <QtDebug>
 #include <QDateTime>
 #include <QProcess>
+#include <QString>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -48,9 +49,10 @@ void MainWindow::InitForm()
    this->rencode_text_2="";
    QRcode_Encode(this->rencode_text);
    QRcode_Encode_2(this->rencode_text_2);
+
    //设置调试窗口的字体大小
    ui->plainTextEdit->setFont(QFont( "宋体" , 10 ,  QFont::Normal) );
-   log_output(tr("开机启动..."));
+   log_output(tr("启动..."));
    QFile file("macAdress.txt");
    if(!file.open(QIODevice::WriteOnly|QIODevice::Append|QIODevice::Text))
    {
@@ -534,107 +536,99 @@ char MainWindow::StrToInt(char aChar)
     printf("%s %d\n",__FUNCTION__,ss);
     return ss;
 }
+//函 数 名：HexToAsc()
+//功能描述：把16进制转换为ASCII
+char IntToStr(unsigned char aChar){
+    char ss;
+    switch(aChar)
+    {
+        case 0: ss= '0';break;
+        case 1: ss= '1';break;
+        case 2: ss= '2';break;
+        case 3: ss= '3';break;
+        case 4: ss= '4';break;
+        case 5: ss= '5';break;
+        case 6: ss= '6';break;
+        case 7: ss= '7';break;
+        case 8: ss= '8';break;
+        case 9: ss= '9';break;
+
+        case 10: ss= 'A';break;
+        case 11: ss= 'B';break;
+        case 12: ss= 'C';break;
+        case 13: ss= 'D';break;
+        case 14: ss= 'E';break;
+        case 15: ss= 'F';break;
+        default:break;
+    }
+    //printf("%c\n",ss);
+    return ss;
+}
+//char *str=(char*)malloc(4*2);
+char * HexToString(char *str,unsigned char Hex[],unsigned char lenth)
+{
+    unsigned char i=0,j=0;
+    unsigned char tema,temp;
+    //char *str=(char*)malloc(lenth*2);
+    for(i=0;i<lenth;i++)
+    {
+        tema=(Hex[i]>>4)&0x0F;
+        str[j]=IntToStr(tema);
+        j++;
+        temp=Hex[i]&0x0F;
+        str[j]=IntToStr(temp);
+        j++;
+    }
+    str[j]='\0';
+    return str;
+}
+
 void MainWindow::on_print_button_clicked()
 {
-   QByteArray readCm;
-   QByteArray readCmd;
-   QByteArray readCmdMac;
-   char readCharMac;
-   int i=0;
+   QByteArray readCmdMac="DD54";
    static int pTwoFlag=0;
+   static int macValue=0x10000001;//初始值
+   QString sValue=ui->textEdit->toPlainText();
+   qDebug()<<sValue;
+   //QByteArray iValue=sValue.toLatin1().toHex();//QString 转成QByteArray
+   //qDebug()<<iValue;
+   //readCmdMac.append(iValue);
+   bool ok;
+   macValue=sValue.toLong(&ok,16);
+   qDebug()<<macValue;
+   qDebug("%x\r\n",macValue);
+   int imacStep=ui->textEdit_2->toPlainText().toInt();
+   qDebug()<<imacStep;
+   int imacCount=ui->textEdit_3->toPlainText().toInt();
+   qDebug()<<imacCount;
+   //return;
+for(int imac=0;imac<imacCount;imac++)
+{
+    //第一次数据##########################################
+    readCmdMac="DD54";
+    qDebug()<<QString::number(macValue,16).toUpper();
+    readCmdMac.append(QString::number(macValue,16).toUpper().toLatin1());
+    qDebug()<<readCmdMac;
 
-   //执行cmd的相关命令
-   QProcess p(0);
-   p.start(READ_MAC_CMD);
-   p.waitForStarted();
-   p.waitForFinished();
-   //获取MAC地址
-   readCm  = p.readAllStandardOutput().trimmed();
-   //复位 如果不复位的话，板子现在在烧录模式，灯还一直亮着
-   p.start(RESET_CMD);
-   p.waitForStarted();
-   p.waitForFinished();
-   qDebug()<<readCm;
-   //判断数据是否正确，不正确就返回
-   if(readCm.size()<5)
-   {
-        log_output(readCmdMac);
-        log_output(tr("1查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
-        return;
-   }
-
-   readCmd = readCm.mid(15,17);
-   //去掉空格
-   readCmdMac.resize(12);
-   for(int j=0;j<readCmd.size();j++)
-   {
-       if(readCmd.at(j)!=' ')
-       {
-           readCmdMac[i++]=(readCmd.at(j));
-       }
-   }
-   readCmdMac[i]='\0';
-   //把最后一个字节的那个位改变一下
-   //qDebug("%x",readCmdMac.data()[10]);
-   readCharMac=readCmdMac.data()[10];
-   readCharMac=StrToInt(readCharMac);
-   //qDebug("%x",readCharMac);
-   readCharMac|=0xC;
-   //qDebug("%x",readCharMac);
-   readCmdMac.data()[10]=IntToStr(readCharMac);
-   //qDebug()<<readCmdMac.data()[10];
-   qDebug()<<readCmdMac;
-   qDebug("%d",readCmdMac.size());
-   if(readCmdMac.size()<13)
-   {
-       log_output(readCmdMac);
-       log_output(tr("2查看是否安装了jlink驱动，连接了jlink并连接了设备......."));
-       return;
-   }
-   if(ui->checkBox->isChecked())
-   {
-       if(pTwoFlag==0)
-       {
-           pTwoFlag=1;
-           ui->rencode_lineEdit->setText(readCmdMac);
-           this->rencode_text=readCmdMac;
-           //在PC界面显示二维码
-           QRcode_Encode(this->rencode_text);
-           log_output(tr("MacNo.1:")+readCmdMac);
-           ui->print_button->setText("再次读取一次，并打印");
-           return;
-       }
-       else if(pTwoFlag==1)
-       {
-           pTwoFlag=2;
-           ui->rencode_lineEdit_2->setText(readCmdMac);
-           this->rencode_text_2=readCmdMac;
-           //在PC界面显示二维码
-           QRcode_Encode_2(this->rencode_text_2);
-           log_output(tr("MacNo.2:")+readCmdMac);
-           ui->print_button->setText("打印");
-       }
-   }
-   else
-   {
-       ui->rencode_lineEdit->setText(readCmdMac);
-       this->rencode_text=readCmdMac;
-       log_output(tr("MacNo.1:")+readCmdMac);
-   }
-   if(ui->checkBox->isChecked())
-   {
-       if(pTwoFlag==2)
-       {
-           pTwoFlag=0;
-       }
-       else
-       {
-           log_output(tr("两次数据不够，请重新开始打印！"));
-           return;
-       }
-   }
-#if 1
-    //二维码打印
+    ui->rencode_lineEdit->setText(readCmdMac);
+    this->rencode_text=readCmdMac;
+    //在PC界面显示二维码
+    QRcode_Encode(this->rencode_text);
+    log_output(tr("-->1:")+readCmdMac);
+    ui->print_button->setText("再次读取一次，并打印");
+    macValue+=imacStep;
+    //第二次数据##########################################
+    readCmdMac="DD54";
+    readCmdMac.append(QString::number(macValue,16).toUpper().toLatin1());
+    qDebug()<<readCmdMac;
+    ui->rencode_lineEdit_2->setText(readCmdMac);
+    this->rencode_text_2=readCmdMac;
+    //在PC界面显示二维码
+    QRcode_Encode_2(this->rencode_text_2);
+    log_output(tr("-->:")+readCmdMac);
+    ui->print_button->setText("打印");
+    macValue+=imacStep;
+    //二维码打印///////////////////////////////////////////////////
     static long prinCount=0;
     QPrinter printer;
     //设置纸张大小
@@ -666,34 +660,7 @@ void MainWindow::on_print_button_clicked()
         log_output(tr("[单张]打印第 ")+QString::number(prinCount)+tr(" 次"));
         QPcode(&printer,&painter,this->rencode_text);
     }
-#endif
-
-    //打印完一次后清空数据
-    if(ui->checkBox->isChecked())
-    {
-//        this->rencode_text  =" ";
-//        this->rencode_text_2=" ";
-//        ui->rencode_lineEdit->setText("");
-//        ui->rencode_lineEdit_2->setText("");
-//        QRcode_Encode(this->rencode_text);
-//        QRcode_Encode_2(this->rencode_text_2);
-    }
-    else
-    {
-//        this->rencode_text  =" ";
-//        ui->rencode_lineEdit->setText("");
-//        QRcode_Encode(this->rencode_text);
-    }
-    //条形码显示
-//    QPrinter printer;
-//    log_output("开始打印...");
-//    if (this->rencode_text.trimmed().isEmpty())
-//        return;
-//    QPainter painter(&printer);
-//    barcode->setBarcodeType((BarCode::BarcodeTypes)60);
-//    barcode->setValue(this->rencode_text);
-//    barcode->drawBarcode(&painter, 0, 0, 70,70);
-//    painter.end();
+}
 }
 //二维码显示
 void MainWindow::QRcode_Encode_2(QByteArray &text)

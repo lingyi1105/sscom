@@ -24,6 +24,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -40,6 +41,19 @@ public:
     QHBoxLayout *horizontalLayout_5;
     QWidget *widget;
     QVBoxLayout *verticalLayout_4;
+    QGroupBox *groupBox_4;
+    QGridLayout *gridLayout;
+    QCheckBox *checkBox;
+    QPlainTextEdit *plainTextEdit;
+    QGroupBox *groupBox_5;
+    QTextEdit *textEdit;
+    QTextEdit *textEdit_2;
+    QTextEdit *textEdit_3;
+    QGroupBox *groupBox;
+    QVBoxLayout *verticalLayout_5;
+    QHBoxLayout *horizontalLayout;
+    QLabel *rencode_view;
+    QLabel *rencode_view_2;
     QGroupBox *groupBox_2;
     QWidget *layoutWidget;
     QVBoxLayout *verticalLayout_2;
@@ -59,15 +73,6 @@ public:
     QHBoxLayout *horizontalLayout_4;
     QPushButton *open_port_Button;
     QPushButton *check_port_Button;
-    QGroupBox *groupBox_4;
-    QGridLayout *gridLayout;
-    QCheckBox *checkBox;
-    QPlainTextEdit *plainTextEdit;
-    QGroupBox *groupBox;
-    QVBoxLayout *verticalLayout_5;
-    QHBoxLayout *horizontalLayout;
-    QLabel *rencode_view;
-    QLabel *rencode_view_2;
     QHBoxLayout *horizontalLayout_2;
     QLineEdit *rencode_lineEdit;
     QLineEdit *rencode_lineEdit_2;
@@ -108,7 +113,94 @@ public:
         verticalLayout_4 = new QVBoxLayout(widget);
         verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
         verticalLayout_4->setContentsMargins(0, 0, 0, 0);
-        groupBox_2 = new QGroupBox(widget);
+        groupBox_4 = new QGroupBox(widget);
+        groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
+        groupBox_4->setEnabled(true);
+        sizePolicy.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
+        groupBox_4->setSizePolicy(sizePolicy);
+        groupBox_4->setMinimumSize(QSize(50, 0));
+        gridLayout = new QGridLayout(groupBox_4);
+        gridLayout->setSpacing(2);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setContentsMargins(5, 16, 5, 5);
+        checkBox = new QCheckBox(groupBox_4);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(checkBox->sizePolicy().hasHeightForWidth());
+        checkBox->setSizePolicy(sizePolicy2);
+        QFont font;
+        font.setFamily(QString::fromUtf8("\345\256\213\344\275\223"));
+        font.setPointSize(12);
+        font.setBold(false);
+        font.setWeight(50);
+        checkBox->setFont(font);
+        checkBox->setChecked(true);
+
+        gridLayout->addWidget(checkBox, 3, 1, 1, 1);
+
+        plainTextEdit = new QPlainTextEdit(groupBox_4);
+        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
+        plainTextEdit->setEnabled(true);
+
+        gridLayout->addWidget(plainTextEdit, 4, 1, 1, 2);
+
+        groupBox_5 = new QGroupBox(groupBox_4);
+        groupBox_5->setObjectName(QStringLiteral("groupBox_5"));
+        QSizePolicy sizePolicy3(QSizePolicy::Expanding, QSizePolicy::Minimum);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(groupBox_5->sizePolicy().hasHeightForWidth());
+        groupBox_5->setSizePolicy(sizePolicy3);
+        groupBox_5->setMinimumSize(QSize(0, 97));
+        textEdit = new QTextEdit(groupBox_5);
+        textEdit->setObjectName(QStringLiteral("textEdit"));
+        textEdit->setGeometry(QRect(10, 20, 191, 32));
+        sizePolicy1.setHeightForWidth(textEdit->sizePolicy().hasHeightForWidth());
+        textEdit->setSizePolicy(sizePolicy1);
+        textEdit->setMaximumSize(QSize(16777215, 32));
+        textEdit_2 = new QTextEdit(groupBox_5);
+        textEdit_2->setObjectName(QStringLiteral("textEdit_2"));
+        textEdit_2->setGeometry(QRect(10, 60, 61, 31));
+        textEdit_3 = new QTextEdit(groupBox_5);
+        textEdit_3->setObjectName(QStringLiteral("textEdit_3"));
+        textEdit_3->setGeometry(QRect(90, 60, 111, 31));
+
+        gridLayout->addWidget(groupBox_5, 0, 1, 2, 1);
+
+
+        verticalLayout_4->addWidget(groupBox_4);
+
+
+        horizontalLayout_5->addWidget(widget);
+
+        groupBox = new QGroupBox(groupBox_3);
+        groupBox->setObjectName(QStringLiteral("groupBox"));
+        verticalLayout_5 = new QVBoxLayout(groupBox);
+        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
+        rencode_view = new QLabel(groupBox);
+        rencode_view->setObjectName(QStringLiteral("rencode_view"));
+        rencode_view->setEnabled(true);
+        sizePolicy1.setHeightForWidth(rencode_view->sizePolicy().hasHeightForWidth());
+        rencode_view->setSizePolicy(sizePolicy1);
+        rencode_view->setScaledContents(false);
+        rencode_view->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout->addWidget(rencode_view);
+
+        rencode_view_2 = new QLabel(groupBox);
+        rencode_view_2->setObjectName(QStringLiteral("rencode_view_2"));
+        sizePolicy1.setHeightForWidth(rencode_view_2->sizePolicy().hasHeightForWidth());
+        rencode_view_2->setSizePolicy(sizePolicy1);
+        rencode_view_2->setTextFormat(Qt::RichText);
+        rencode_view_2->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout->addWidget(rencode_view_2);
+
+        groupBox_2 = new QGroupBox(groupBox);
         groupBox_2->setObjectName(QStringLiteral("groupBox_2"));
         sizePolicy.setHeightForWidth(groupBox_2->sizePolicy().hasHeightForWidth());
         groupBox_2->setSizePolicy(sizePolicy);
@@ -121,9 +213,6 @@ public:
         verticalLayout_2->setContentsMargins(0, 0, 0, 0);
         port_comboBox = new QComboBox(layoutWidget);
         port_comboBox->setObjectName(QStringLiteral("port_comboBox"));
-        QSizePolicy sizePolicy2(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(port_comboBox->sizePolicy().hasHeightForWidth());
         port_comboBox->setSizePolicy(sizePolicy2);
 
@@ -223,70 +312,8 @@ public:
 
         horizontalLayout_4->addWidget(check_port_Button);
 
-        layoutWidget->raise();
-        layoutWidget_2->raise();
-        layoutWidget_3->raise();
 
-        verticalLayout_4->addWidget(groupBox_2);
-
-        groupBox_4 = new QGroupBox(widget);
-        groupBox_4->setObjectName(QStringLiteral("groupBox_4"));
-        groupBox_4->setEnabled(true);
-        sizePolicy.setHeightForWidth(groupBox_4->sizePolicy().hasHeightForWidth());
-        groupBox_4->setSizePolicy(sizePolicy);
-        groupBox_4->setMinimumSize(QSize(50, 0));
-        gridLayout = new QGridLayout(groupBox_4);
-        gridLayout->setSpacing(2);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
-        gridLayout->setContentsMargins(5, 16, 5, 5);
-        checkBox = new QCheckBox(groupBox_4);
-        checkBox->setObjectName(QStringLiteral("checkBox"));
-        sizePolicy2.setHeightForWidth(checkBox->sizePolicy().hasHeightForWidth());
-        checkBox->setSizePolicy(sizePolicy2);
-        QFont font;
-        font.setFamily(QString::fromUtf8("\345\256\213\344\275\223"));
-        font.setPointSize(12);
-        font.setBold(false);
-        font.setWeight(50);
-        checkBox->setFont(font);
-        checkBox->setChecked(true);
-
-        gridLayout->addWidget(checkBox, 0, 1, 1, 1);
-
-        plainTextEdit = new QPlainTextEdit(groupBox_4);
-        plainTextEdit->setObjectName(QStringLiteral("plainTextEdit"));
-        plainTextEdit->setEnabled(true);
-
-        gridLayout->addWidget(plainTextEdit, 1, 1, 1, 2);
-
-
-        verticalLayout_4->addWidget(groupBox_4);
-
-
-        horizontalLayout_5->addWidget(widget);
-
-        groupBox = new QGroupBox(groupBox_3);
-        groupBox->setObjectName(QStringLiteral("groupBox"));
-        verticalLayout_5 = new QVBoxLayout(groupBox);
-        verticalLayout_5->setObjectName(QStringLiteral("verticalLayout_5"));
-        horizontalLayout = new QHBoxLayout();
-        horizontalLayout->setObjectName(QStringLiteral("horizontalLayout"));
-        rencode_view = new QLabel(groupBox);
-        rencode_view->setObjectName(QStringLiteral("rencode_view"));
-        rencode_view->setEnabled(true);
-        sizePolicy1.setHeightForWidth(rencode_view->sizePolicy().hasHeightForWidth());
-        rencode_view->setSizePolicy(sizePolicy1);
-        rencode_view->setScaledContents(false);
-        rencode_view->setAlignment(Qt::AlignCenter);
-
-        horizontalLayout->addWidget(rencode_view);
-
-        rencode_view_2 = new QLabel(groupBox);
-        rencode_view_2->setObjectName(QStringLiteral("rencode_view_2"));
-        sizePolicy1.setHeightForWidth(rencode_view_2->sizePolicy().hasHeightForWidth());
-        rencode_view_2->setSizePolicy(sizePolicy1);
-
-        horizontalLayout->addWidget(rencode_view_2);
+        horizontalLayout->addWidget(groupBox_2);
 
 
         verticalLayout_5->addLayout(horizontalLayout);
@@ -336,6 +363,27 @@ public:
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0));
         groupBox_3->setTitle(QString());
+        groupBox_4->setTitle(QApplication::translate("MainWindow", "\350\260\203\350\257\225\344\277\241\346\201\257", 0));
+        checkBox->setText(QApplication::translate("MainWindow", "\345\220\214\346\227\266\346\211\223\345\215\260\344\270\244\345\274\240\344\272\214\347\273\264\347\240\201", 0));
+        groupBox_5->setTitle(QApplication::translate("MainWindow", "\345\217\202\346\225\260\350\256\276\347\275\256", 0));
+        textEdit->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Lucida Grande,\345\276\256\350\275\257\351\233\205\351\273\221'; font-size:14px; color:#333333; background-color:#ffffff;\">11300001</span></p></body></html>", 0));
+        textEdit_2->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt;\">1</span></p></body></html>", 0));
+        textEdit_3->setHtml(QApplication::translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">1</p></body></html>", 0));
+        groupBox->setTitle(QApplication::translate("MainWindow", "\344\272\214\347\273\264\347\240\201\346\230\276\347\244\272", 0));
+        rencode_view->setText(QApplication::translate("MainWindow", "Image1", 0));
+        rencode_view_2->setText(QApplication::translate("MainWindow", "Image2", 0));
         groupBox_2->setTitle(QApplication::translate("MainWindow", "\344\270\262\345\217\243\351\205\215\347\275\256", 0));
         label->setText(QApplication::translate("MainWindow", "\347\253\257\345\217\243\357\274\232", 0));
         label_2->setText(QApplication::translate("MainWindow", "\346\263\242\347\211\271\347\216\207\357\274\232", 0));
@@ -344,11 +392,6 @@ public:
         label_5->setText(QApplication::translate("MainWindow", "\345\201\234\346\255\242\344\275\215\357\274\232", 0));
         open_port_Button->setText(QApplication::translate("MainWindow", "\346\211\223\345\274\200", 0));
         check_port_Button->setText(QApplication::translate("MainWindow", "\346\243\200\346\265\213", 0));
-        groupBox_4->setTitle(QApplication::translate("MainWindow", "\350\260\203\350\257\225\344\277\241\346\201\257", 0));
-        checkBox->setText(QApplication::translate("MainWindow", "\345\220\214\346\227\266\346\211\223\345\215\260\344\270\244\345\274\240\344\272\214\347\273\264\347\240\201", 0));
-        groupBox->setTitle(QApplication::translate("MainWindow", "\344\272\214\347\273\264\347\240\201\346\230\276\347\244\272", 0));
-        rencode_view->setText(QString());
-        rencode_view_2->setText(QApplication::translate("MainWindow", "Image2", 0));
         print_button->setText(QApplication::translate("MainWindow", "\346\211\223\345\215\260", 0));
     } // retranslateUi
 
